@@ -343,10 +343,6 @@ const handleSubmit = async () => {
     window.$message.success('操作成功')
     modalVisible.value = false
     loadData()
-  } catch (error: any) {
-    if (error.message) {
-      window.$message.error(error.message)
-    }
   } finally {
     submitLoading.value = false
   }
@@ -357,9 +353,7 @@ const handleStatusChange = async (row: Permission, val: boolean) => {
     await permissionApi.update({ id: row.id, status: val ? 1 : 0 })
     window.$message.success('状态更新成功')
     loadData()
-  } catch (error: any) {
-    window.$message.error(error.message)
-  }
+  } catch {}
 }
 
 const handleDelete = async (row: Permission) => {
@@ -373,9 +367,7 @@ const handleDelete = async (row: Permission) => {
         await permissionApi.delete(row.id)
         window.$message.success('删除成功')
         loadData()
-      } catch (error: any) {
-        window.$message.error(error.message)
-      }
+      } catch {}
     }
   })
 }

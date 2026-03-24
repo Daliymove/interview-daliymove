@@ -78,73 +78,66 @@ import { ref, computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { MenuOption } from 'naive-ui'
 import { useUserStore } from '@/stores/user'
+import { useMenuStore } from '@/stores/menu'
 import { authApi } from '@/api'
+import { resetRoutes } from '@/router'
+import type { Router } from '@/types'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const menuStore = useMenuStore()
 
 const collapsed = ref(false)
 
-const renderIcon = (icon: string) => {
+const renderIcon = (icon?: string) => {
+  if (!icon) return undefined
   return () => h('span', { class: `i-${icon} text-lg` })
 }
 
-const menuOptions: MenuOption[] = [
-  {
-    label: '仪表盘',
-    key: 'dashboard',
-    icon: renderIcon('carbon-dashboard')
-  },
-  {
-    label: '系统管理',
-    key: 'system',
-    icon: renderIcon('carbon-settings'),
-    children: [
-      {
-        label: '用户管理',
-        key: 'system-user',
-        icon: renderIcon('carbon-user-multiple')
-      },
-      {
-        label: '角色管理',
-        key: 'system-role',
-        icon: renderIcon('carbon-user-role')
-      },
-      {
-        label: '权限管理',
-        key: 'system-permission',
-        icon: renderIcon('carbon-locked')
-      },
-      {
-        label: '菜单管理',
-        key: 'system-menu',
-        icon: renderIcon('carbon-menu')
+const buildMenuOptions = (routers: Router[]): MenuOption[] => {
+  return routers
+    .filter(r => !r.meta?.hidden)
+    .map(r => {
+      const menu: MenuOption = {
+        label: r.meta?.title || r.name,
+        key: r.name,
+        icon: renderIcon(r.meta?.icon)
       }
-    ]
-  },
-  {
-    label: '日志管理',
-    key: 'log',
-    icon: renderIcon('carbon-document'),
-    children: [
-      {
-        label: '操作日志',
-        key: 'log-operation',
-        icon: renderIcon('carbon-activity')
+      if (r.children && r.children.length > 0) {
+        menu.children = buildMenuOptions(r.children)
       }
-    ]
-  }
-]
+      return menu
+    })
+}
+
+const menuOptions = computed<MenuOption[]>(() => {
+  return buildMenuOptions(menuStore.routers)
+})
+
+const flattenRouters = (routers: Router[], result: Map<string, string> = new Map()): Map<string, string> => {
+  routers.forEach(r => {
+    if (r.path && r.path !== '/' && !r.children?.length) {
+      result.set(r.name, r.path)
+    }
+    if (r.children) {
+      flattenRouters(r.children, result)
+    }
+  })
+  return result
+}
+
+const namePathMap = computed(() => {
+  return flattenRouters(menuStore.routers)
+})
 
 const currentKey = computed(() => {
   const path = route.path
-  if (path === '/dashboard') return 'dashboard'
-  if (path.startsWith('/system/user')) return 'system-user'
-  if (path.startsWith('/system/role')) return 'system-role'
-  if (path.startsWith('/system/permission')) return 'system-permission'
-  if (path.startsWith('/system/menu')) return 'system-menu'
-  if (path.startsWith('/log/operation')) return 'log-operation'
+  for (const [name, p] of namePathMap.value) {
+    if (p === path || path.startsWith(p + '/')) {
+      return name
+    }
+  }
   return ''
 })
 
@@ -174,16 +167,7 @@ const userOptions = [
 ]
 
 const handleMenuSelect = (key: string) => {
-  const keyPathMap: Record<string, string> = {
-    'dashboard': '/dashboard',
-    'system-user': '/system/user',
-    'system-role': '/system/role',
-    'system-permission': '/system/permission',
-    'system-menu': '/system/menu',
-    'log-operation': '/log/operation'
-  }
-  
-  const path = keyPathMap[key]
+  const path = namePathMap.value.get(key)
   if (path) {
     router.push(path)
   }
@@ -197,6 +181,8 @@ const handleUserSelect = async (key: string) => {
       // ignore
     }
     userStore.logout()
+    menuStore.clearMenus()
+    resetRoutes()
     router.push('/login')
   }
 }

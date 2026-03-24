@@ -59,6 +59,8 @@ export default defineConfig({
     'i-carbon-data-base',
     'i-carbon-time',
     'i-carbon-login',
-    'i-carbon-home'
+    'i-carbon-home',
+    'i-carbon-chat-bot',
+    'i-carbon-building'
   ]
 })

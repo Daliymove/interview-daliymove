@@ -221,9 +221,7 @@ const handleDelete = async (row: OperationLog) => {
         await logApi.delete(row.id)
         window.$message.success('删除成功')
         loadData()
-      } catch (error: any) {
-        window.$message.error(error.message)
-      }
+      } catch {}
     }
   })
 }

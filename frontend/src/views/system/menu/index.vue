@@ -280,10 +280,6 @@ const handleSubmit = async () => {
     window.$message.success('操作成功')
     modalVisible.value = false
     loadData()
-  } catch (error: any) {
-    if (error.message) {
-      window.$message.error(error.message)
-    }
   } finally {
     submitLoading.value = false
   }
@@ -294,9 +290,7 @@ const handleStatusChange = async (row: Menu, val: boolean) => {
     await menuApi.update({ id: row.id, status: val ? 1 : 0 })
     window.$message.success('状态更新成功')
     loadData()
-  } catch (error: any) {
-    window.$message.error(error.message)
-  }
+  } catch {}
 }
 
 const handleDelete = async (row: Menu) => {
@@ -310,9 +304,7 @@ const handleDelete = async (row: Menu) => {
         await menuApi.delete(row.id)
         window.$message.success('删除成功')
         loadData()
-      } catch (error: any) {
-        window.$message.error(error.message)
-      }
+      } catch {}
     }
   })
 }

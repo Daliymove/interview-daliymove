@@ -41,8 +41,8 @@ public class PermissionService {
             wrapper.eq(Permission::getStatus, dto.getStatus());
         }
 
+        wrapper.orderByAsc(Permission::getParentId);
         wrapper.orderByAsc(Permission::getSort);
-        wrapper.orderByDesc(Permission::getCreateTime);
 
         Page<Permission> permissionPage = permissionMapper.selectPage(page, wrapper);
 

@@ -109,9 +109,12 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { FormInst, FormRules } from 'naive-ui'
 import { useUserStore } from '@/stores/user'
+import { useMenuStore } from '@/stores/menu'
+import { getFirstRoute } from '@/router'
 
 const router = useRouter()
 const userStore = useUserStore()
+const menuStore = useMenuStore()
 
 const formRef = ref<FormInst | null>(null)
 const loading = ref(false)
@@ -135,12 +138,9 @@ const handleLogin = async () => {
     await formRef.value?.validate()
     loading.value = true
     await userStore.login(form.value.username, form.value.password)
+    await menuStore.getRouters()
     window.$message.success('登录成功')
-    await router.replace('/dashboard')
-  } catch (error: any) {
-    if (error?.message) {
-      window.$message.error(error.message)
-    }
+    await router.replace(getFirstRoute())
   } finally {
     loading.value = false
   }

@@ -167,7 +167,7 @@ const form = reactive({
   email: '',
   phone: '',
   status: 1,
-  deptId: null as number | null // 新增，使用联合类型支持 null
+  deptId: undefined as number | undefined
 })
 
 const rules: FormRules = {
@@ -277,7 +277,7 @@ const handleEdit = (row: User) => {
   currentUserId.value = row.id
   Object.assign(form, {
     username: row.username,
-    password: '',
+    password: '123456',
     nickname: row.nickname,
     email: row.email,
     phone: row.phone,
@@ -300,10 +300,6 @@ const handleSubmit = async () => {
     window.$message.success('操作成功')
     modalVisible.value = false
     loadData()
-  } catch (error: any) {
-    if (error.message) {
-      window.$message.error(error.message)
-    }
   } finally {
     submitLoading.value = false
   }
@@ -314,9 +310,7 @@ const handleStatusChange = async (row: User, val: boolean) => {
     await userApi.update({ id: row.id, status: val ? 1 : 0 })
     window.$message.success('状态更新成功')
     loadData()
-  } catch (error: any) {
-    window.$message.error(error.message)
-  }
+  } catch {}
 }
 
 const handleDelete = async (row: User) => {
@@ -330,9 +324,7 @@ const handleDelete = async (row: User) => {
         await userApi.delete(row.id)
         window.$message.success('删除成功')
         loadData()
-      } catch (error: any) {
-        window.$message.error(error.message)
-      }
+      } catch {}
     }
   })
 }
@@ -347,7 +339,7 @@ const handleAssignRoleClick = async (row: User) => {
   await loadRoleList()
   
   await userApi.getById(row.id)
-  selectedRoleIds.value = []
+  selectedRoleIds.value = row.roles?.map(role => role.id) || []
   
   roleModalVisible.value = true
 }
@@ -361,8 +353,6 @@ const handleAssignRole = async () => {
     window.$message.success('分配角色成功')
     roleModalVisible.value = false
     loadData()
-  } catch (error: any) {
-    window.$message.error(error.message)
   } finally {
     roleSubmitLoading.value = false
   }

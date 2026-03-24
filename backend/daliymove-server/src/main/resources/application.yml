@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8901
   servlet:
     context-path: /api
 
@@ -39,7 +39,7 @@ mybatis-plus:
 
 sa-token:
   token-name: Authorization
-  timeout: 86400
+  timeout: 3600
   active-timeout: -1
   is-concurrent: true
   is-share: true

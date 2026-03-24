@@ -104,8 +104,6 @@ public class UserService {
             wrapper.eq(User::getDeptId, dto.getDeptId());
         }
 
-        wrapper.orderByDesc(User::getCreateTime);
-
         Page<User> userPage = userMapper.selectPage(page, wrapper);
 
         PageResult<UserVO> result = new PageResult<>();

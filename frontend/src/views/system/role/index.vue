@@ -300,10 +300,6 @@ const handleSubmit = async () => {
     window.$message.success('操作成功')
     modalVisible.value = false
     loadData()
-  } catch (error: any) {
-    if (error.message) {
-      window.$message.error(error.message)
-    }
   } finally {
     submitLoading.value = false
   }
@@ -314,9 +310,7 @@ const handleStatusChange = async (row: Role, val: boolean) => {
     await roleApi.update({ id: row.id, status: val ? 1 : 0 })
     window.$message.success('状态更新成功')
     loadData()
-  } catch (error: any) {
-    window.$message.error(error.message)
-  }
+  } catch {}
 }
 
 const handleDelete = async (row: Role) => {
@@ -330,9 +324,7 @@ const handleDelete = async (row: Role) => {
         await roleApi.delete(row.id)
         window.$message.success('删除成功')
         loadData()
-      } catch (error: any) {
-        window.$message.error(error.message)
-      }
+      } catch {}
     }
   })
 }
@@ -360,8 +352,6 @@ const handleAssignPermission = async () => {
     await roleApi.assignPermissions(assignRoleId.value, selectedPermissionIds.value)
     window.$message.success('分配权限成功')
     permissionModalVisible.value = false
-  } catch (error: any) {
-    window.$message.error(error.message)
   } finally {
     permissionSubmitLoading.value = false
   }
@@ -403,8 +393,6 @@ const handleAssignMenu = async () => {
     await roleApi.assignMenus(assignRoleId.value, menuIds)
     window.$message.success('分配菜单成功')
     menuModalVisible.value = false
-  } catch (error: any) {
-    window.$message.error(error.message)
   } finally {
     menuSubmitLoading.value = false
   }
