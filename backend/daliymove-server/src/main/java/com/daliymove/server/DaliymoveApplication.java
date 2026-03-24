@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @ComponentScan("com.daliymove")
-@MapperScan("com.daliymove.system.mapper")
+@MapperScan({"com.daliymove.system.mapper", "com.daliymove.modules.chat.mapper"})
 @EnableAsync
 public class DaliymoveApplication {
 

@@ -338,8 +338,7 @@ const handleAssignRoleClick = async (row: User) => {
   assignUserId.value = row.id
   await loadRoleList()
   
-  await userApi.getById(row.id)
-  selectedRoleIds.value = row.roles?.map(role => role.id) || []
+  selectedRoleIds.value = (row.roles as unknown as { id: number }[])?.map(role => role.id) || []
   
   roleModalVisible.value = true
 }

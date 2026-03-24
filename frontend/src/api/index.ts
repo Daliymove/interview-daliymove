@@ -1,5 +1,5 @@
 import { request } from '@/utils/request'
-import type { LoginUser, User, Role, Permission, Menu, Router, OperationLog, PageResult, Result } from '@/types'
+import type { LoginUser, User, Role, Permission, Menu, Router, OperationLog, PageResult, Result, Conversation } from '@/types'
 
 export const authApi = {
   login(data: { username: string; password: string }): Promise<Result<LoginUser>> {
@@ -138,5 +138,27 @@ export const logApi = {
   
   delete(id: number): Promise<Result<void>> {
     return request.delete(`/log/${id}`)
+  }
+}
+
+export const chatApi = {
+  getConversations(): Promise<Conversation[]> {
+    return request.get<Result<Conversation[]>>('/chat/conversations').then((res: Result<Conversation[]>) => res.data)
+  },
+  
+  getConversation(id: number): Promise<Conversation> {
+    return request.get<Result<Conversation>>(`/chat/conversation/${id}`).then((res: Result<Conversation>) => res.data)
+  },
+  
+  createConversation(): Promise<Conversation> {
+    return request.post<Result<Conversation>>('/chat/conversation').then((res: Result<Conversation>) => res.data)
+  },
+  
+  updateTitle(id: number, title: string): Promise<void> {
+    return request.put(`/chat/conversation/${id}/title`, null, { params: { title } })
+  },
+  
+  deleteConversation(id: number): Promise<void> {
+    return request.delete(`/chat/conversation/${id}`)
   }
 }

@@ -39,6 +39,14 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      '/api/chat/stream': {
+        target: 'http://localhost:8901',
+        changeOrigin: true,
+        proxyReq: (proxyReq) => {
+          proxyReq.setHeader('Cache-Control', 'no-cache')
+          proxyReq.setHeader('Connection', 'keep-alive')
+        }
+      },
       '/api': {
         target: 'http://localhost:8901',
         changeOrigin: true

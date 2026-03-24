@@ -7,6 +7,15 @@ spring:
   application:
     name: daliymove-server
 
+  ai:
+    openai:
+      api-key: ${DASHSCOPE_API_KEY}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/
+      chat:
+        options:
+          model: qwen-plus
+          temperature: 0.7
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/enterprise_admin?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
@@ -45,6 +54,9 @@ sa-token:
   is-share: true
   token-style: uuid
   is-log: false
+  is-read-header: true
+  is-read-cookie: true
+  is-read-body: true
 
 knife4j:
   enable: true

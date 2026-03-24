@@ -121,3 +121,19 @@ export interface dept {
   createTime?: string
   updateTime?: string
 }
+
+export interface Message {
+  id: number
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  createTime?: number
+}
+
+export interface Conversation {
+  id: number
+  title: string
+  modelType?: string
+  createTime?: number
+  updateTime?: number
+  messages?: Message[]
+}
