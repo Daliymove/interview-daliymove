@@ -1,8 +1,25 @@
-HELP.md
+### Maven ###
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.gz
 
 ### STS ###
 .apt_generated
@@ -14,24 +31,39 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-/.idea
+.idea/
 *.iws
 *.iml
 *.ipr
+out/
 
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/frontend/dist/
 /nbdist/
 /.nb-gradle/
-/backend/build/
+/build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
 
+### Logs ###
+logs/
+*.log
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Project Specific ###
 /backend/logs/
-/backend/target/
+/backend/**/target/
+/frontend/dist/
 /frontend/node_modules/
+
+### Application ###
+application-local.yml
+application-dev.yml
+application-prod.yml
