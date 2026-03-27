@@ -82,16 +82,7 @@ public class MenuService {
 
         Page<Menu> menuPage = menuMapper.selectPage(page, wrapper);
 
-        PageResult<MenuVO> result = new PageResult<>();
-        result.setTotal(menuPage.getTotal());
-        result.setSize(menuPage.getSize());
-        result.setCurrent(menuPage.getCurrent());
-        result.setPages(menuPage.getPages());
-        result.setRecords(menuPage.getRecords().stream()
-            .map(this::convertToVO)
-            .collect(Collectors.toList()));
-
-        return result;
+        return PageResult.of(menuPage, this::convertToVO);
     }
 
     public MenuVO getById(Long id) {

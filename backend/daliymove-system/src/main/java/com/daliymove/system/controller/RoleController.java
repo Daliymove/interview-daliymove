@@ -10,11 +10,18 @@ import com.daliymove.system.service.RoleService;
 import com.daliymove.system.vo.RoleVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 角色控制器
+ * - 角色的增删改查
+ * - 角色权限分配
+ * - 角色菜单分配
+ */
 @Tag(name = "角色管理")
 @RestController
 @RequestMapping("/role")
@@ -48,7 +55,7 @@ public class RoleController {
     @Operation(summary = "新增角色")
     @Log("新增角色")
     @PostMapping
-    public Result<Void> save(@RequestBody RoleDTO dto) {
+    public Result<Void> save(@Valid @RequestBody RoleDTO dto) {
         roleService.save(dto);
         return Result.success();
     }
@@ -57,7 +64,7 @@ public class RoleController {
     @Operation(summary = "更新角色")
     @Log("更新角色")
     @PutMapping
-    public Result<Void> update(@RequestBody RoleDTO dto) {
+    public Result<Void> update(@Valid @RequestBody RoleDTO dto) {
         roleService.update(dto);
         return Result.success();
     }

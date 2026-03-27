@@ -11,11 +11,17 @@ import com.daliymove.system.vo.MenuVO;
 import com.daliymove.system.vo.RouterVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 菜单控制器
+ * - 获取当前用户路由
+ * - 菜单的增删改查
+ */
 @Tag(name = "菜单管理")
 @RestController
 @RequestMapping("/menu")
@@ -55,7 +61,7 @@ public class MenuController {
     @Operation(summary = "新增菜单")
     @Log("新增菜单")
     @PostMapping
-    public Result<Void> save(@RequestBody MenuDTO dto) {
+    public Result<Void> save(@Valid @RequestBody MenuDTO dto) {
         menuService.save(dto);
         return Result.success();
     }
@@ -64,7 +70,7 @@ public class MenuController {
     @Operation(summary = "更新菜单")
     @Log("更新菜单")
     @PutMapping
-    public Result<Void> update(@RequestBody MenuDTO dto) {
+    public Result<Void> update(@Valid @RequestBody MenuDTO dto) {
         menuService.update(dto);
         return Result.success();
     }

@@ -67,10 +67,10 @@
         <div ref="messageContainerRef" class="flex-1 overflow-y-auto p-4">
           <div class="max-w-3xl mx-auto space-y-4">
             <MessageItem
-              v-for="msg in messages"
-              :key="msg.id"
+              v-for="(msg, index) in messages"
+              :key="msg.id || index"
               :message="msg"
-              :is-streaming="isStreaming && msg === messages[messages.length - 1] && msg.role === 'assistant'"
+              :is-streaming="isStreaming && index === messages.length - 1 && msg.role === 'assistant'"
             />
           </div>
         </div>

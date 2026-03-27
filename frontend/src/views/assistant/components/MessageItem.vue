@@ -1,15 +1,15 @@
 <template>
-  <div :class="['flex gap-3', message.role === 'user' ? 'flex-row-reverse' : '']">
+  <div :class="['flex gap-3', message?.role === 'user' ? 'flex-row-reverse' : '']">
     <div
       :class="[
         'w-8 h-8 rounded-lg flex-shrink-0 flex-center',
-        message.role === 'user' ? 'bg-primary' : 'bg-gray-100'
+        message?.role === 'user' ? 'bg-primary' : 'bg-gray-100'
       ]"
     >
       <span
         :class="[
           'text-lg',
-          message.role === 'user' ? 'i-carbon-user text-white' : 'i-carbon-chat-bot text-gray-500'
+          message?.role === 'user' ? 'i-carbon-user text-white' : 'i-carbon-chat-bot text-gray-500'
         ]"
       ></span>
     </div>
@@ -17,22 +17,22 @@
     <div
       :class="[
         'max-w-[80%] rounded-xl px-4 py-3',
-        message.role === 'user'
+        message?.role === 'user'
           ? 'bg-primary text-white'
           : 'bg-gray-50 text-gray-800'
       ]"
     >
-      <div v-if="message.role === 'assistant'" class="prose prose-sm max-w-none" v-html="renderedContent"></div>
-      <div v-else class="whitespace-pre-wrap">{{ message.content }}</div>
+      <div v-if="message?.role === 'assistant'" class="prose prose-sm max-w-none" v-html="renderedContent"></div>
+      <div v-else class="whitespace-pre-wrap">{{ message?.content || '' }}</div>
       
-      <div v-if="isStreaming && !message.content" class="flex gap-1 items-center">
+      <div v-if="isStreaming && !message?.content" class="flex gap-1 items-center">
         <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
         <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
         <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
       </div>
     </div>
 
-    <div v-if="message.role === 'assistant' && !isStreaming" class="flex items-end gap-1 opacity-0 group-hover:opacity-100">
+    <div v-if="message?.role === 'assistant' && !isStreaming" class="flex items-end gap-1 opacity-0 group-hover:opacity-100">
       <n-button quaternary size="tiny" @click="copyContent">
         <template #icon>
           <span class="i-carbon-copy text-sm"></span>
@@ -54,11 +54,23 @@ const props = defineProps<{
   isStreaming?: boolean
 }>()
 
+const escapeHtml = (s: string): string => {
+  if (!s) return ''
+  return s.replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c] || c))
+}
+
 const md = new MarkdownIt({
   html: false,
   linkify: true,
   typographer: true,
   highlight: function(str: string, lang: string): string {
+    if (!str) return '<pre class="hljs"><code></code></pre>'
     if (lang && hljs.getLanguage(lang)) {
       try {
         return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang, ignoreIllegals: true }).value}</code></pre>`
@@ -66,18 +78,24 @@ const md = new MarkdownIt({
         // ignore
       }
     }
-    return `<pre class="hljs"><code>${MarkdownIt.prototype.utils.escapeHtml(str)}</code></pre>`
+    return `<pre class="hljs"><code>${escapeHtml(str)}</code></pre>`
   }
 })
 
 const renderedContent = computed(() => {
-  if (!props.message.content) return ''
-  return md.render(props.message.content)
+  const content = props.message?.content
+  if (!content) return ''
+  try {
+    return md.render(content)
+  } catch (e) {
+    console.error('Markdown render error:', e)
+    return escapeHtml(content)
+  }
 })
 
 const copyContent = async () => {
   try {
-    await navigator.clipboard.writeText(props.message.content)
+    await navigator.clipboard.writeText(props.message?.content || '')
     window.$message.success('已复制到剪贴板')
   } catch {
     window.$message.error('复制失败')

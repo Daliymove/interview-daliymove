@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.daliymove.system.mapper.RoleMapper">
+
+    <select id="selectPermissionIdsByRoleIds" resultType="java.util.Map">
+        SELECT rp.role_id as roleId, rp.permission_id as permissionId
+        FROM sys_role_permission rp
+        INNER JOIN sys_permission p ON rp.permission_id = p.id
+        WHERE rp.role_id IN
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+          AND p.status = 1
+          AND p.deleted = 0
+    </select>
+
+    <select id="selectMenuIdsByRoleIds" resultType="java.util.Map">
+        SELECT rm.role_id as roleId, rm.menu_id as menuId
+        FROM sys_role_menu rm
+        INNER JOIN sys_menu m ON rm.menu_id = m.id
+        WHERE rm.role_id IN
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+          AND m.status = 1
+          AND m.deleted = 0
+    </select>
+
+</mapper>

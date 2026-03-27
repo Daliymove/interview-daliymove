@@ -28,7 +28,7 @@
         </n-input>
         <n-select
           v-model:value="searchForm.status"
-          :options="statusOptions"
+          :options="STATUS_OPTIONS"
           placeholder="状态筛选"
           class="w-32"
           clearable
@@ -125,42 +125,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, h, onMounted, computed } from 'vue'
+/**
+ * 用户管理页面
+ * - 用户列表展示与分页
+ * - 用户新增/编辑
+ * - 用户删除
+ * - 角色分配
+ */
+import { ref, h, onMounted } from 'vue'
 import { NButton, NSpace, NTag, NSwitch } from 'naive-ui'
-import type { DataTableColumns, FormInst, FormRules } from 'naive-ui'
+import type { DataTableColumns, FormRules } from 'naive-ui'
 import { userApi, roleApi } from '@/api'
+import { usePagination } from '@/composables/usePagination'
+import { useSearchForm } from '@/composables/useSearchForm'
+import { STATUS_OPTIONS } from '@/utils/constants'
+import { confirmDelete } from '@/utils/dialog'
 import type { User, Role } from '@/types'
 
 const loading = ref(false)
 const tableData = ref<User[]>([])
-const pagination = reactive({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0
+
+const { pagination, pageCount, handlePageChange, handlePageSizeChange, setTotal, getParams } = usePagination({
+  onLoad: loadData
 })
 
-const pageCount = computed(() => {
-  return Math.ceil(pagination.itemCount / pagination.pageSize)
+const { searchForm, resetSearch: resetSearchForm, getParams: getSearchParams } = useSearchForm({
+  onReset: () => {
+    pagination.page = 1
+    loadData()
+  }
 })
-
-const searchForm = reactive({
-  keyword: '',
-  status: null as number | null
-})
-
-const statusOptions = [
-  { label: '启用', value: 1 },
-  { label: '禁用', value: 0 }
-]
 
 const modalVisible = ref(false)
 const modalTitle = ref('新增用户')
 const isEdit = ref(false)
-const formRef = ref<FormInst | null>(null)
+const formRef = ref()
 const submitLoading = ref(false)
 const currentUserId = ref<number | null>(null)
 
-const form = reactive({
+const form = ref({
   username: '',
   password: '',
   nickname: '',
@@ -223,78 +226,64 @@ const columns: DataTableColumns<User> = [
   }
 ]
 
-const loadData = async () => {
+async function loadData() {
   loading.value = true
   try {
     const res = await userApi.getPage({
-      pageNum: pagination.page,
-      pageSize: pagination.pageSize,
-      keyword: searchForm.keyword,
-      status: searchForm.status
+      ...getParams(),
+      ...getSearchParams()
     })
     tableData.value = res.data.records
-    pagination.itemCount = res.data.total
+    setTotal(res.data.total)
   } finally {
     loading.value = false
   }
 }
 
-const handlePageChange = (page: number) => {
-  pagination.page = page
-  loadData()
+function resetSearch() {
+  resetSearchForm()
 }
 
-const handlePageSizeChange = (pageSize: number) => {
-  pagination.pageSize = pageSize
-  pagination.page = 1
-  loadData()
-}
-
-const resetSearch = () => {
-  searchForm.keyword = ''
-  searchForm.status = null
-  pagination.page = 1
-  loadData()
-}
-
-const handleAdd = () => {
+function handleAdd() {
   modalTitle.value = '新增用户'
   isEdit.value = false
-  Object.assign(form, {
+  form.value = {
     username: '',
     password: '',
     nickname: '',
     email: '',
     phone: '',
-    status: 1
-  })
+    status: 1,
+    deptId: undefined
+  }
   modalVisible.value = true
 }
 
-const handleEdit = (row: User) => {
+function handleEdit(row: User) {
   modalTitle.value = '编辑用户'
   isEdit.value = true
   currentUserId.value = row.id
-  Object.assign(form, {
+  form.value = {
     username: row.username,
     password: '123456',
     nickname: row.nickname,
     email: row.email,
     phone: row.phone,
-    status: row.status
-  })
+    status: row.status,
+    deptId: row.deptId
+  }
   modalVisible.value = true
 }
 
-const handleSubmit = async () => {
+async function handleSubmit() {
   try {
     await formRef.value?.validate()
     submitLoading.value = true
     
     if (isEdit.value && currentUserId.value) {
-      await userApi.update({ id: currentUserId.value, ...form })
+      await userApi.update({ id: currentUserId.value, ...form.value })
     } else {
-      await userApi.save(form)
+      await userApi.save(form.value)
     }
     
     window.$message.success('操作成功')
@@ -305,36 +294,29 @@ const handleSubmit = async () => {
   }
 }
 
-const handleStatusChange = async (row: User, val: boolean) => {
+async function handleStatusChange(row: User, val: boolean) {
   try {
     await userApi.update({ id: row.id, status: val ? 1 : 0 })
     window.$message.success('状态更新成功')
     loadData()
-  } catch {}
+  } catch {
+    // 错误已在请求拦截器中处理
+  }
 }
 
-const handleDelete = async (row: User) => {
-  window.$dialog.warning({
-    title: '确认删除',
-    content: `确定要删除用户 "${row.username}" 吗？`,
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      try {
-        await userApi.delete(row.id)
-        window.$message.success('删除成功')
-        loadData()
-      } catch {}
-    }
+function handleDelete(row: User) {
+  confirmDelete(row.username, async () => {
+    await userApi.delete(row.id)
+    loadData()
   })
 }
 
-const loadRoleList = async () => {
+async function loadRoleList() {
   const res = await roleApi.listAll()
   roleList.value = res.data
 }
 
-const handleAssignRoleClick = async (row: User) => {
+async function handleAssignRoleClick(row: User) {
   assignUserId.value = row.id
   await loadRoleList()
   
@@ -343,7 +325,7 @@ const handleAssignRoleClick = async (row: User) => {
   roleModalVisible.value = true
 }
 
-const handleAssignRole = async () => {
+async function handleAssignRole() {
   if (!assignUserId.value) return
   
   try {

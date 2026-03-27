@@ -10,11 +10,17 @@ import com.daliymove.system.service.UserService;
 import com.daliymove.system.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 用户控制器
+ * - 用户的增删改查
+ * - 用户角色分配
+ */
 @Tag(name = "用户管理")
 @RestController
 @RequestMapping("/user")
@@ -41,7 +47,7 @@ public class UserController {
     @Operation(summary = "新增用户")
     @Log("新增用户")
     @PostMapping
-    public Result<Void> save(@RequestBody UserDTO dto) {
+    public Result<Void> save(@Valid @RequestBody UserDTO dto) {
         userService.save(dto);
         return Result.success();
     }
@@ -50,7 +56,7 @@ public class UserController {
     @Operation(summary = "更新用户")
     @Log("更新用户")
     @PutMapping
-    public Result<Void> update(@RequestBody UserDTO dto) {
+    public Result<Void> update(@Valid @RequestBody UserDTO dto) {
         userService.update(dto);
         return Result.success();
     }

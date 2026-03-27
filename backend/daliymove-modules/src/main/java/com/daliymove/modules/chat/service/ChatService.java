@@ -15,6 +15,12 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 聊天服务类
+ * - 对话的创建、查询、更新、删除
+ * - 消息的保存和查询
+ * - 对话和消息的转换处理
+ */
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -22,6 +28,13 @@ public class ChatService {
     private final ConversationMapper conversationMapper;
     private final MessageMapper messageMapper;
 
+    /**
+     * 获取当前用户的对话列表
+     * 
+     * 按更新时间倒序返回当前用户的所有有效对话。
+     * 
+     * @return 对话列表
+     */
     public List<ConversationVO> getConversationList() {
         Long userId = StpUtil.getLoginIdAsLong();
         
@@ -35,6 +48,12 @@ public class ChatService {
         return conversations.stream().map(this::convertToVO).collect(Collectors.toList());
     }
 
+    /**
+     * 获取对话详情（包含消息列表）
+     * 
+     * @param id 对话ID
+     * @return 对话详情（包含消息列表）
+     */
     public ConversationVO getConversation(Long id) {
         Long userId = StpUtil.getLoginIdAsLong();
         
@@ -62,6 +81,13 @@ public class ChatService {
         return vo;
     }
 
+    /**
+     * 创建新对话
+     * 
+     * 使用当前登录用户创建新对话，默认标题为"新对话"，模型类型为"qwen-plus"。
+     * 
+     * @return 创建的对话对象
+     */
     @Transactional(rollbackFor = Exception.class)
     public ChatConversation createConversation() {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -77,6 +103,12 @@ public class ChatService {
         return conversation;
     }
 
+    /**
+     * 更新对话标题
+     * 
+     * @param id 对话ID
+     * @param title 新标题
+     */
     @Transactional(rollbackFor = Exception.class)
     public void updateTitle(Long id, String title) {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -93,6 +125,13 @@ public class ChatService {
         }
     }
 
+    /**
+     * 删除对话（逻辑删除）
+     * 
+     * 同时删除对话关联的所有消息。
+     * 
+     * @param id 对话ID
+     */
     @Transactional(rollbackFor = Exception.class)
     public void deleteConversation(Long id) {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -114,6 +153,13 @@ public class ChatService {
         }
     }
 
+    /**
+     * 保存消息
+     * 
+     * @param conversationId 对话ID
+     * @param role 角色（user/assistant）
+     * @param content 消息内容
+     */
     @Transactional(rollbackFor = Exception.class)
     public void saveMessage(Long conversationId, String role, String content) {
         ChatMessage message = new ChatMessage();
@@ -123,6 +169,15 @@ public class ChatService {
         messageMapper.insert(message);
     }
 
+    /**
+     * 获取或创建对话
+     * 
+     * 如果对话ID不为空且存在有效对话，则返回该对话；否则创建新对话。
+     * 
+     * @param conversationId 对话ID（可为空）
+     * @param userId 用户ID
+     * @return 对话对象
+     */
     public ChatConversation getOrCreateConversation(Long conversationId, Long userId) {
         if (conversationId != null) {
             ChatConversation existing = conversationMapper.selectOne(
@@ -139,6 +194,12 @@ public class ChatService {
         return createConversation(userId);
     }
     
+    /**
+     * 获取对话的所有消息
+     * 
+     * @param conversationId 对话ID
+     * @return 消息列表（按创建时间升序）
+     */
     public List<ChatMessage> getConversationMessages(Long conversationId) {
         return messageMapper.selectList(
             new LambdaQueryWrapper<ChatMessage>()
@@ -147,6 +208,12 @@ public class ChatService {
         );
     }
     
+    /**
+     * 为指定用户创建对话
+     * 
+     * @param userId 用户ID
+     * @return 创建的对话对象
+     */
     @Transactional(rollbackFor = Exception.class)
     public ChatConversation createConversation(Long userId) {
         ChatConversation conversation = new ChatConversation();
@@ -160,6 +227,12 @@ public class ChatService {
         return conversation;
     }
 
+    /**
+     * 将对话实体转换为视图对象
+     * 
+     * @param conversation 对话实体
+     * @return 对话视图对象
+     */
     private ConversationVO convertToVO(ChatConversation conversation) {
         ConversationVO vo = new ConversationVO();
         vo.setId(conversation.getId());
@@ -172,6 +245,12 @@ public class ChatService {
         return vo;
     }
 
+    /**
+     * 将消息实体转换为视图对象
+     * 
+     * @param message 消息实体
+     * @return 消息视图对象
+     */
     private ConversationVO.MessageVO convertMessageToVO(ChatMessage message) {
         ConversationVO.MessageVO vo = new ConversationVO.MessageVO();
         vo.setId(message.getId());

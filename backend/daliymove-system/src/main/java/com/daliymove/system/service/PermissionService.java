@@ -46,16 +46,7 @@ public class PermissionService {
 
         Page<Permission> permissionPage = permissionMapper.selectPage(page, wrapper);
 
-        PageResult<PermissionVO> result = new PageResult<>();
-        result.setTotal(permissionPage.getTotal());
-        result.setSize(permissionPage.getSize());
-        result.setCurrent(permissionPage.getCurrent());
-        result.setPages(permissionPage.getPages());
-        result.setRecords(permissionPage.getRecords().stream()
-            .map(this::convertToVO)
-            .collect(Collectors.toList()));
-
-        return result;
+        return PageResult.of(permissionPage, this::convertToVO);
     }
 
     public List<PermissionVO> listAll() {
