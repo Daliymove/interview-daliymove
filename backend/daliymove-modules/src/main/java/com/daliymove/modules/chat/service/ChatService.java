@@ -30,7 +30,6 @@ public class ChatService {
 
     /**
      * 获取当前用户的对话列表
-     * 
      * 按更新时间倒序返回当前用户的所有有效对话。
      * 
      * @return 对话列表
@@ -83,7 +82,6 @@ public class ChatService {
 
     /**
      * 创建新对话
-     * 
      * 使用当前登录用户创建新对话，默认标题为"新对话"，模型类型为"qwen-plus"。
      * 
      * @return 创建的对话对象
@@ -112,7 +110,18 @@ public class ChatService {
     @Transactional(rollbackFor = Exception.class)
     public void updateTitle(Long id, String title) {
         Long userId = StpUtil.getLoginIdAsLong();
-        
+        updateTitle(id, title, userId);
+    }
+
+    /**
+     * 更新对话标题（异步线程使用）
+     * 
+     * @param id 对话ID
+     * @param title 新标题
+     * @param userId 用户ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateTitle(Long id, String title, Long userId) {
         ChatConversation conversation = conversationMapper.selectOne(
             new LambdaQueryWrapper<ChatConversation>()
                 .eq(ChatConversation::getId, id)
@@ -127,7 +136,6 @@ public class ChatService {
 
     /**
      * 删除对话（逻辑删除）
-     * 
      * 同时删除对话关联的所有消息。
      * 
      * @param id 对话ID
@@ -171,7 +179,6 @@ public class ChatService {
 
     /**
      * 获取或创建对话
-     * 
      * 如果对话ID不为空且存在有效对话，则返回该对话；否则创建新对话。
      * 
      * @param conversationId 对话ID（可为空）

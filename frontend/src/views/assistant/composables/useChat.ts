@@ -121,20 +121,38 @@ export function useChat() {
       }
     })
 
+    eventSource.addEventListener('title', (e: MessageEvent) => {
+      console.log('SSE title:', e.data)
+      try {
+        const data = JSON.parse(e.data)
+        if (data.title && currentConversation.value) {
+          currentConversation.value.title = data.title
+          const conv = conversations.value.find(c => c.id === currentConversation.value?.id)
+          if (conv) {
+            conv.title = data.title
+          }
+        }
+      } catch (err) {
+        console.error('Parse title error:', err)
+      }
+    })
+
     eventSource.addEventListener('done', (e: MessageEvent) => {
       console.log('SSE done:', e.data)
       try {
         const data = JSON.parse(e.data)
         if (data.conversationId) {
-          if (!currentConversation.value) {
-            loadConversations()
-          }
-          if (!currentConversation.value || currentConversation.value.id !== data.conversationId) {
-            const conv = conversations.value.find(c => c.id === data.conversationId)
-            if (conv) {
-              currentConversation.value = conv
-              loadConversations()
+          loadConversations()
+          if (currentConversation.value && currentConversation.value.id === data.conversationId) {
+            const loadCurrentTitle = async () => {
+              const conv = await chatApi.getConversation(data.conversationId)
+              if (conv && currentConversation.value?.id === data.conversationId) {
+                currentConversation.value = conv
+              }
             }
+            loadCurrentTitle()
+          } else if (!currentConversation.value) {
+            loadConversation(data.conversationId)
           }
         }
       } catch {

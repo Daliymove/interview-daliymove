@@ -26,6 +26,11 @@ public class AiService {
         请用中文回答问题，回答要专业、简洁、有条理。
         如果用户问的是技术问题，请提供清晰的解释和代码示例（如果适用）。
         """;
+    
+    private static final String TITLE_PROMPT = """
+        请为以下对话生成一个简短的标题（不超过15个字），只返回标题内容，不要包含任何其他文字。
+        对话内容：%s
+        """;
 
     public String chat(String userMessage) {
         ChatClient chatClient = ChatClient.create(chatModel);
@@ -64,6 +69,23 @@ public class AiService {
         return chatClient.prompt(prompt)
                 .stream()
                 .content();
+    }
+
+    /**
+     * 生成对话标题
+     * 根据用户问题生成简短的对话标题
+     * 
+     * @param userMessage 用户消息
+     * @return 生成的标题
+     */
+    public String generateTitle(String userMessage) {
+        ChatClient chatClient = ChatClient.create(chatModel);
+        String prompt = String.format(TITLE_PROMPT, userMessage);
+        String title = chatClient.prompt()
+                .user(prompt)
+                .call()
+                .content();
+        return title != null ? title.trim() : "新对话";
     }
 
     public static class ChatMessageHistory {

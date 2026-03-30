@@ -86,8 +86,17 @@ public class ChatController {
             try {
                 ChatConversation conversation = chatService.getOrCreateConversation(conversationId, userId);
                 Long actualConversationId = conversation.getId();
+                boolean isNewConversation = "新对话".equals(conversation.getTitle());
                 
                 chatService.saveMessage(actualConversationId, "user", message);
+                
+                if (isNewConversation) {
+                    String generatedTitle = aiService.generateTitle(message);
+                    chatService.updateTitle(actualConversationId, generatedTitle, userId);
+                    emitter.send(SseEmitter.event()
+                        .name("title")
+                        .data("{\"title\":\"" + escapeJson(generatedTitle) + "\"}"));
+                }
                 
                 List<ChatMessage> history = chatService.getConversationMessages(actualConversationId);
                 List<AiService.ChatMessageHistory> chatHistory = history.stream()
@@ -125,6 +134,7 @@ public class ChatController {
                         if (!completed.get()) {
                             try {
                                 chatService.saveMessage(actualConversationId, "assistant", fullContent.toString());
+                                
                                 emitter.send(SseEmitter.event()
                                     .name("done")
                                     .data("{\"conversationId\":" + actualConversationId + ",\"tokens\":150}"));

@@ -65,7 +65,7 @@
         </div>
 
         <div ref="messageContainerRef" class="flex-1 overflow-y-auto p-4">
-          <div class="max-w-3xl mx-auto space-y-4">
+          <div class="max-w-4xl mx-auto space-y-4">
             <MessageItem
               v-for="(msg, index) in messages"
               :key="msg.id || index"
@@ -76,7 +76,7 @@
         </div>
 
         <div class="p-4 border-t border-gray-100">
-          <div class="max-w-3xl mx-auto flex gap-2">
+          <div class="max-w-4xl mx-auto flex gap-2">
             <n-input
               v-model:value="inputMessage"
               type="textarea"
