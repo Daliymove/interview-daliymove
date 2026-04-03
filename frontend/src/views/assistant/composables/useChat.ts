@@ -41,6 +41,16 @@ export function useChat() {
   }
 
   const createConversation = async () => {
+    const emptyConv = conversations.value.find(c => c.title === '新对话')
+    if (emptyConv) {
+      const convDetail = await chatApi.getConversation(emptyConv.id)
+      if (convDetail && (!convDetail.messages || convDetail.messages.length === 0)) {
+        currentConversation.value = convDetail
+        messages.value = []
+        return convDetail
+      }
+    }
+    
     const conversation = await chatApi.createConversation()
     conversations.value.unshift(conversation)
     currentConversation.value = conversation

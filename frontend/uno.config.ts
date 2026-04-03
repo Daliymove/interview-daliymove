@@ -62,6 +62,8 @@ export default defineConfig({
     'i-carbon-home',
     'i-carbon-chat-bot',
     'i-carbon-chat-launch',
+    'i-carbon-copy-file',
+    'i-carbon-categories',
     'i-carbon-building'
   ]
 })
