@@ -137,7 +137,7 @@
  * - 支持导出PDF
  * - 支持重新分析/重新评估
  */
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { historyApi } from '@/api/history'
 import { interviewApi } from '@/api/interview'
@@ -163,7 +163,10 @@ const loadingInterview = ref(false)
 const reanalyzing = ref(false)
 const reevaluating = ref(false)
 
-const resumeId = computed(() => Number(route.params.id))
+const resumeId = computed(() => {
+  const id = Number(route.params.id)
+  return Number.isNaN(id) ? null : id
+})
 
 const latestAnalysis = computed(() => {
   if (!resume.value?.analyses?.length) return undefined
@@ -188,6 +191,11 @@ const latestAnalysis = computed(() => {
 })
 
 const loadResumeDetail = async (silent = false) => {
+  if (resumeId.value === null) {
+    console.error('无效的简历ID')
+    router.push('/resume')
+    return
+  }
   if (!silent) loading.value = true
   try {
     const data = await historyApi.getResumeDetail(resumeId.value)
@@ -200,6 +208,7 @@ const loadResumeDetail = async (silent = false) => {
 }
 
 const handleReanalyze = async () => {
+  if (resumeId.value === null) return
   try {
     reanalyzing.value = true
     await historyApi.reanalyze(resumeId.value)
@@ -229,6 +238,7 @@ const handleReevaluate = async () => {
 }
 
 const handleExportAnalysisPdf = async () => {
+  if (resumeId.value === null) return
   exporting.value = 'analysis'
   try {
     const blob = await historyApi.exportAnalysisPdf(resumeId.value)
@@ -316,6 +326,25 @@ const handleBackClick = () => {
   }
 }
 
+let pollTimer: ReturnType<typeof setInterval> | null = null
+
+const startPolling = () => {
+  if (pollTimer) return
+  
+  pollTimer = setInterval(() => {
+    if (resumeId.value !== null) {
+      loadResumeDetail(true)
+    }
+  }, 5000)
+}
+
+const stopPolling = () => {
+  if (pollTimer) {
+    clearInterval(pollTimer)
+    pollTimer = null
+  }
+}
+
 watch(resume, (newResume) => {
   if (!newResume) return
   
@@ -323,13 +352,15 @@ watch(resume, (newResume) => {
   const isProcessing = status === 'PENDING' || status === 'PROCESSING' ||
     (status === undefined && (!newResume.analyses || newResume.analyses.length === 0))
   
-  if (isProcessing && !loading.value) {
-    const timer = setInterval(() => {
-      loadResumeDetail(true)
-    }, 5000)
-    
-    return () => clearInterval(timer)
+  if (isProcessing) {
+    startPolling()
+  } else {
+    stopPolling()
   }
+})
+
+onUnmounted(() => {
+  stopPolling()
 })
 
 onMounted(async () => {

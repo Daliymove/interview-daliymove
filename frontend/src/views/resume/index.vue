@@ -57,7 +57,7 @@
     </div>
 
     <div class="flex-1 min-h-0">
-      <HistoryList @select-resume="handleSelectResume" />
+      <HistoryList @select-resume="handleSelectResume" @resume-deleted="loadStats" />
     </div>
   </div>
 </template>

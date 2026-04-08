@@ -91,16 +91,16 @@
             <template v-if="analysis?.strengths && analysis.strengths.length > 0">
               <n-card embedded class="mt-4">
                 <span class="text-sm font-semibold text-emerald-600 block mb-3">优势亮点</span>
-                <n-space>
-                  <n-tag
+                <div class="space-y-2">
+                  <div
                     v-for="(s, i) in analysis.strengths"
                     :key="i"
-                    type="success"
-                    round
+                    class="flex items-start gap-2"
                   >
-                    {{ s }}
-                  </n-tag>
-                </n-space>
+                    <span class="i-carbon-checkmark-filled text-emerald-500 mt-0.5 flex-shrink-0"></span>
+                    <span class="text-sm text-slate-700 leading-relaxed">{{ s }}</span>
+                  </div>
+                </div>
               </n-card>
             </template>
           </div>
@@ -114,43 +114,44 @@
 
           <RadarChart :data="radarData" :height="320" />
 
-          <div class="mt-4 grid grid-cols-2 gap-3">
+          <div class="mt-6 space-y-3">
             <ScoreProgressBar
               label="项目经验"
               :score="projectScore"
               :max-score="40"
               color="bg-purple-500"
               :delay="0.3"
-              class-name="col-span-2"
             />
-            <ScoreProgressBar
-              label="技能匹配"
-              :score="skillMatchScore"
-              :max-score="20"
-              color="bg-blue-500"
-              :delay="0.4"
-            />
-            <ScoreProgressBar
-              label="内容完整性"
-              :score="contentScore"
-              :max-score="15"
-              color="bg-emerald-500"
-              :delay="0.5"
-            />
-            <ScoreProgressBar
-              label="结构清晰度"
-              :score="structureScore"
-              :max-score="15"
-              color="bg-cyan-500"
-              :delay="0.6"
-            />
-            <ScoreProgressBar
-              label="表达专业性"
-              :score="expressionScore"
-              :max-score="10"
-              color="bg-orange-500"
-              :delay="0.7"
-            />
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <ScoreProgressBar
+                label="技能匹配"
+                :score="skillMatchScore"
+                :max-score="20"
+                color="bg-blue-500"
+                :delay="0.4"
+              />
+              <ScoreProgressBar
+                label="内容完整性"
+                :score="contentScore"
+                :max-score="15"
+                color="bg-emerald-500"
+                :delay="0.5"
+              />
+              <ScoreProgressBar
+                label="结构清晰度"
+                :score="structureScore"
+                :max-score="15"
+                color="bg-cyan-500"
+                :delay="0.6"
+              />
+              <ScoreProgressBar
+                label="表达专业性"
+                :score="expressionScore"
+                :max-score="10"
+                color="bg-orange-500"
+                :delay="0.7"
+              />
+            </div>
           </div>
         </n-card>
       </div>

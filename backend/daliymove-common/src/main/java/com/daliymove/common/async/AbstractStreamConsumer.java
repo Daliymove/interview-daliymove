@@ -94,9 +94,13 @@ public abstract class AbstractStreamConsumer<T> {
             taskDisplayName(), payloadIdentifier(payload), messageId, retryCount);
 
         try {
+            // 修改分析状态
             markProcessing(payload);
+            // 核心业务逻辑处理
             processBusiness(payload);
+            // 修改为已完成状态
             markCompleted(payload);
+            // ack回调
             ackMessage(messageId);
             log.info("{}任务完成: {}", taskDisplayName(), payloadIdentifier(payload));
         } catch (Exception e) {

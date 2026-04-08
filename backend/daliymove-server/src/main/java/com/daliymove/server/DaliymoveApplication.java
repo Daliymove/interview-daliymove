@@ -15,7 +15,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
  */
 @SpringBootApplication
 @ComponentScan("com.daliymove")
-@MapperScan("com.daliymove")
+@MapperScan({
+    "com.daliymove.modules.resume.mapper",
+    "com.daliymove.modules.interview.mapper",
+    "com.daliymove.modules.knowledge.mapper",
+    "com.daliymove.modules.chat.mapper",
+    "com.daliymove.system.mapper"
+})
 @EnableAsync
 public class DaliymoveApplication {
 

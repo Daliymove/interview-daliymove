@@ -66,6 +66,7 @@ import { getScoreColor } from '@/utils/score'
 
 const emit = defineEmits<{
   selectResume: [id: number]
+  resumeDeleted: []
 }>()
 
 const resumes = ref<ResumeListItem[]>([])
@@ -134,7 +135,7 @@ const columns: DataTableColumns<ResumeListItem> = [
   {
     title: '大小',
     key: 'fileSize',
-    width: 100,
+    width: 90,
     render(row) {
       return formatFileSize(row.fileSize)
     }
@@ -142,7 +143,7 @@ const columns: DataTableColumns<ResumeListItem> = [
   {
     title: '分析状态',
     key: 'analyzeStatus',
-    width: 120,
+    width: 110,
     render(row) {
       return h('div', { class: 'flex items-center gap-2' }, [
         h('span', { class: getStatusIcon(row.analyzeStatus, row.latestScore !== undefined) }),
@@ -153,18 +154,20 @@ const columns: DataTableColumns<ResumeListItem> = [
   {
     title: 'AI 评分',
     key: 'latestScore',
-    width: 150,
+    width: 160,
     render(row) {
       if (row.latestScore !== undefined) {
         return h('div', { class: 'flex items-center gap-3' }, [
-          h(NProgress, {
-            type: 'line',
-            percentage: row.latestScore,
-            showIndicator: false,
-            height: 8,
-            class: 'w-16'
-          }),
-          h('span', { class: `font-bold ${getScoreColor(row.latestScore)}` }, row.latestScore)
+          h('div', { class: 'flex-1' }, [
+            h(NProgress, {
+              type: 'line',
+              percentage: row.latestScore,
+              showIndicator: false,
+              height: 6,
+              borderRadius: 3
+            })
+          ]),
+          h('span', { class: `font-bold w-8 text-right ${getScoreColor(row.latestScore)}` }, row.latestScore)
         ])
       }
       return h('span', { class: 'text-slate-400' }, '-')
@@ -173,7 +176,7 @@ const columns: DataTableColumns<ResumeListItem> = [
   {
     title: '面试',
     key: 'interviewCount',
-    width: 100,
+    width: 90,
     render(row) {
       if (row.interviewCount > 0) {
         return h(NTag, { type: 'success', round: true }, { default: () => `${row.interviewCount} 次` })
@@ -184,7 +187,7 @@ const columns: DataTableColumns<ResumeListItem> = [
   {
     title: '上传时间',
     key: 'uploadedAt',
-    width: 120,
+    width: 110,
     render(row) {
       return formatDate(row.uploadedAt)
     }
@@ -192,29 +195,47 @@ const columns: DataTableColumns<ResumeListItem> = [
   {
     title: '操作',
     key: 'actions',
-    width: 150,
+    width: 180,
     render(row) {
       return h(NSpace, { size: 'small' }, {
         default: () => [
+          h(NButton, {
+            size: 'small',
+            quaternary: true,
+            type: 'primary',
+            onClick: (e: MouseEvent) => {
+              e.stopPropagation()
+              emit('selectResume', row.id)
+            }
+          }, { default: () => '查看' }),
           row.storageUrl ? h(NButton, {
             size: 'small',
             quaternary: true,
             type: 'primary',
-            onClick: () => handleDownload(row)
+            onClick: (e: MouseEvent) => {
+              e.stopPropagation()
+              handleDownload(row)
+            }
           }, { default: () => '下载' }) : null,
-          row.analyzeStatus === 'FAILED' ? h(NButton, {
+          (row.analyzeStatus === 'FAILED' || row.analyzeStatus === 'PROCESSING') ? h(NButton, {
             size: 'small',
             quaternary: true,
             type: 'info',
             loading: reanalyzingId.value === row.id,
-            onClick: () => handleReanalyze(row.id)
+            onClick: (e: MouseEvent) => {
+              e.stopPropagation()
+              handleReanalyze(row.id)
+            }
           }, { default: () => '重新分析' }) : null,
           h(NButton, {
             size: 'small',
             quaternary: true,
             type: 'error',
             loading: deletingId.value === row.id,
-            onClick: () => handleDeleteClick(row)
+            onClick: (e: MouseEvent) => {
+              e.stopPropagation()
+              handleDeleteClick(row)
+            }
           }, { default: () => '删除' })
         ]
       })
@@ -279,6 +300,7 @@ const handleDeleteConfirm = async () => {
   try {
     await historyApi.deleteResume(deleteItem.value.id)
     await loadData()
+    emit('resumeDeleted')
     deleteDialogVisible.value = false
     deleteItem.value = null
   } catch (err) {

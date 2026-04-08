@@ -1,7 +1,7 @@
 <template>
   <div class="radar-chart" :style="{ height: `${height}px` }">
-    <svg viewBox="0 0 200 200" class="w-full h-full">
-      <g transform="translate(100, 100)">
+    <svg viewBox="0 0 400 400" class="w-full h-full">
+      <g transform="translate(200, 200)">
         <polygon
           v-for="level in levels"
           :key="level"
@@ -9,6 +9,17 @@
           class="fill-none stroke-slate-200 dark:stroke-slate-700"
           stroke-width="1"
         />
+        <text
+          v-for="level in labelLevels"
+          :key="`level-label-${level}`"
+          :x="0"
+          :y="-getLevelRadius(level) - 8"
+          text-anchor="middle"
+          class="fill-slate-400"
+          font-size="11"
+        >
+          {{ level }}%
+        </text>
         <line
           v-for="(point, i) in normalizedData"
           :key="`axis-${i}`"
@@ -29,7 +40,7 @@
           :key="`dot-${i}`"
           :cx="point.x"
           :cy="point.y"
-          r="4"
+          r="6"
           class="fill-primary"
         />
         <text
@@ -38,8 +49,9 @@
           :x="getLabelPosition(i).x"
           :y="getLabelPosition(i).y"
           text-anchor="middle"
-          class="text-xs fill-slate-600 dark:fill-slate-400"
-          font-size="10"
+          class="fill-slate-600 dark:fill-slate-400"
+          font-size="15"
+          font-weight="600"
         >
           {{ item.subject }}
         </text>
@@ -56,7 +68,6 @@
  * - 支持深色模式
  */
 import { computed } from 'vue'
-import { normalizeScore } from '@/utils/score'
 
 interface RadarDataItem {
   subject: string
@@ -73,22 +84,22 @@ const props = withDefaults(defineProps<Props>(), {
   height: 320
 })
 
-const levels = [20, 40, 60, 80, 100]
+const levels = [25, 50, 75, 100]
+const labelLevels = [50, 100]
 const angleStep = (2 * Math.PI) / 5
+const maxRadius = 150
 
 const normalizedData = computed(() => {
   if (!props.data || props.data.length === 0) return []
   
-  const maxFullMark = Math.max(...props.data.map(item => item.fullMark))
-  
   return props.data.map((item, index) => {
-    const normalizedScore = normalizeScore(item.score, item.fullMark, maxFullMark)
+    const percentage = (item.score / item.fullMark) * 100
     const angle = index * angleStep - Math.PI / 2
-    const radius = normalizedScore
+    const radius = (percentage / 100) * maxRadius
     return {
       subject: item.subject,
-      score: normalizedScore,
-      fullMark: maxFullMark,
+      score: percentage,
+      fullMark: 100,
       originalScore: item.score,
       originalFullMark: item.fullMark,
       x: Math.cos(angle) * radius,
@@ -99,13 +110,18 @@ const normalizedData = computed(() => {
 
 const getPolygonPoints = (level: number): string => {
   const points: string[] = []
+  const radius = getLevelRadius(level)
   for (let i = 0; i < 5; i++) {
     const angle = i * angleStep - Math.PI / 2
-    const x = Math.cos(angle) * level
-    const y = Math.sin(angle) * level
+    const x = Math.cos(angle) * radius
+    const y = Math.sin(angle) * radius
     points.push(`${x},${y}`)
   }
   return points.join(' ')
+}
+
+const getLevelRadius = (level: number): number => {
+  return (level / 100) * maxRadius
 }
 
 const dataPolygonPoints = computed(() => {
@@ -114,7 +130,7 @@ const dataPolygonPoints = computed(() => {
 
 const getLabelPosition = (index: number) => {
   const angle = index * angleStep - Math.PI / 2
-  const radius = 115
+  const radius = 175
   return {
     x: Math.cos(angle) * radius,
     y: Math.sin(angle) * radius
