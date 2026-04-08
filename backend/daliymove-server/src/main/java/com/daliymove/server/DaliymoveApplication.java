@@ -10,12 +10,12 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * Daliymove 应用程序主启动类
  * - 启用 Spring Boot 自动配置
  * - 扫描 com.daliymove 包下的所有组件
- * - 扫描 MyBatis Mapper 接口
+ * - 扫描 com.daliymove 包下的所有 MyBatis Mapper 接口
  * - 启用异步处理支持
  */
 @SpringBootApplication
 @ComponentScan("com.daliymove")
-@MapperScan({"com.daliymove.system.mapper", "com.daliymove.modules.chat.mapper"})
+@MapperScan("com.daliymove")
 @EnableAsync
 public class DaliymoveApplication {
 

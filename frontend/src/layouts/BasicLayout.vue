@@ -62,10 +62,10 @@
         </div>
       </n-layout-header>
 
-      <n-layout-content class="p-5 bg-gray-50" content-style="min-height: calc(100vh - 56px);">
-        <router-view v-slot="{ Component }">
-          <transition name="fade-slide" mode="out-in">
-            <component :is="Component" />
+      <n-layout-content class="p-5 bg-gray-50" content-style="height: calc(100vh - 56px); overflow: auto;">
+        <router-view v-slot="{ Component, route: currentRoute }">
+          <transition name="fade-slide">
+            <component :is="Component" :key="currentRoute.path" />
           </transition>
         </router-view>
       </n-layout-content>
@@ -105,7 +105,11 @@ const buildMenuOptions = (routers: Router[]): MenuOption[] => {
         icon: renderIcon(r.meta?.icon)
       }
       if (r.children && r.children.length > 0) {
-        menu.children = buildMenuOptions(r.children)
+        /** 过滤后如果没有可见子菜单，不设置 children，避免被渲染为可展开的空父菜单 */
+        const visibleChildren = buildMenuOptions(r.children)
+        if (visibleChildren.length > 0) {
+          menu.children = visibleChildren
+        }
       }
       return menu
     })
@@ -117,7 +121,8 @@ const menuOptions = computed<MenuOption[]>(() => {
 
 const flattenRouters = (routers: Router[], result: Map<string, string> = new Map()): Map<string, string> => {
   routers.forEach(r => {
-    if (r.path && r.path !== '/' && !r.children?.length) {
+    /** 所有有路径的路由都应加入映射，包括子菜单全隐藏的父菜单 */
+    if (r.path && r.path !== '/') {
       result.set(r.name, r.path)
     }
     if (r.children) {

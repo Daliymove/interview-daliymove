@@ -162,3 +162,9 @@ export const chatApi = {
     return request.delete(`/chat/conversation/${id}`)
   }
 }
+
+export { resumeApi } from './resume'
+export { interviewApi } from './interview'
+export { knowledgeBaseApi } from './knowledgebase'
+export { ragChatApi } from './ragChat'
+export { historyApi } from './history'

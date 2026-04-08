@@ -267,8 +267,8 @@ function handleEdit(row: User) {
     username: row.username,
     password: '123456',
     nickname: row.nickname,
-    email: row.email,
-    phone: row.phone,
+    email: row.email || '',
+    phone: row.phone || '',
     status: row.status,
     deptId: row.deptId
   }

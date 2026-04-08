@@ -68,3 +68,4 @@ application-dev.yml
 application-prod.yml
 /daliymoveNote/
 /.codebuddy/
+/docs/

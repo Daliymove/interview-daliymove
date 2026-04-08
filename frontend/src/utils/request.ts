@@ -121,7 +121,45 @@ export const request = {
    */
   delete<T>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
     return service.delete(url, { params, ...config })
+  },
+
+  /**
+   * 文件上传
+   * 
+   * @param url 请求地址
+   * @param formData 表单数据
+   * @param config 额外配置
+   * @returns Promise<T> 响应数据
+   */
+  upload<T>(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<T> {
+    return service.post(url, formData, {
+      timeout: 120000,
+      headers: { 'Content-Type': 'multipart/form-data' },
+      ...config,
+    })
+  },
+
+  /**
+   * 获取原始实例（用于特殊场景如下载 Blob）
+   * 
+   * @returns AxiosInstance Axios 实例
+   */
+  getInstance(): AxiosInstance {
+    return service
   }
+}
+
+/**
+ * 获取错误信息
+ * 
+ * @param error 错误对象
+ * @returns string 错误消息
+ */
+export function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return '未知错误'
 }
 
 export default service

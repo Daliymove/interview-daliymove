@@ -29,6 +29,7 @@ export default defineConfig({
     }
   },
   safelist: [
+    // 系统基础图标
     'i-carbon-dashboard',
     'i-carbon-settings',
     'i-carbon-user-multiple',
@@ -64,6 +65,27 @@ export default defineConfig({
     'i-carbon-chat-launch',
     'i-carbon-copy-file',
     'i-carbon-categories',
-    'i-carbon-building'
+    'i-carbon-building',
+    // 知识库模块动态菜单图标
+    'i-carbon-folder',
+    'i-carbon-upload',
+    'i-carbon-chat',
+    // 其他动态使用的图标
+    'i-carbon-download',
+    'i-carbon-microphone',
+    'i-carbon-arrow-left',
+    'i-carbon-arrow-right',
+    'i-carbon-database',
+    'i-carbon-view',
+    'i-carbon-renew',
+    'i-carbon-warning-alt',
+    'i-carbon-play-filled',
+    'i-carbon-chart-line',
+    'i-carbon-pin',
+    'i-carbon-pin-filled',
+    'i-carbon-bot',
+    'i-carbon-chevron-right',
+    'i-carbon-chevron-left',
+    'i-carbon-knowledge-app'
   ]
 })

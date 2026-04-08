@@ -137,3 +137,7 @@ export interface Conversation {
   updateTime?: number
   messages?: Message[]
 }
+
+export * from './resume'
+export * from './interview'
+export * from './knowledge'

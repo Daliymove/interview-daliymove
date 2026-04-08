@@ -27,8 +27,14 @@ const componentMap: Record<string, () => Promise<any>> = {
   'system/dept/index': () => import('@/views/system/dept/index.vue'),
   'log/operation/index': () => import('@/views/log/operation/index.vue'),
   'resume/index': () => import('@/views/resume/index.vue'),
+  'resume/Upload': () => import('@/views/resume/Upload.vue'),
+  'resume/Detail': () => import('@/views/resume/Detail.vue'),
   'assistant/index': () => import('@/views/assistant/index.vue'),
-  'interview/index': () => import('@/views/interview/index.vue')
+  'interview/index': () => import('@/views/interview/index.vue'),
+  'interview/Session': () => import('@/views/interview/Session.vue'),
+  'knowledge/index': () => import('@/views/knowledge/index.vue'),
+  'knowledge/Upload': () => import('@/views/knowledge/Upload.vue'),
+  'knowledge/Query': () => import('@/views/knowledge/Query.vue')
 }
 
 /**
@@ -80,9 +86,11 @@ const buildDynamicRoutes = (routers: Router[]): RouteRecordRaw[] => {
     const isDirectory = router.component === 'Layout' || !router.component
     
     if (isDirectory && hasChildren) {
+      // 纯目录节点，展平子路由
       const childRoutes = buildDynamicRoutes(router.children!)
       routes.push(...childRoutes)
     } else {
+      // 添加当前路由
       routes.push({
         path: router.path,
         name: router.name,
@@ -95,6 +103,11 @@ const buildDynamicRoutes = (routers: Router[]): RouteRecordRaw[] => {
         },
         redirect: router.redirect
       } as RouteRecordRaw)
+      // 非 Layout 父菜单也可能有子路由（如简历管理下的隐藏子页），需要展平添加
+      if (hasChildren) {
+        const childRoutes = buildDynamicRoutes(router.children!)
+        routes.push(...childRoutes)
+      }
     }
   }
   

@@ -43,7 +43,7 @@ export function useCrudModal<T extends Record<string, any>>(options: UseCrudModa
     currentId.value = id
     Object.assign(form, data)
     modalVisible.value = true
-    onEdit?.(id, form)
+    onEdit?.(id, form as T)
   }
 
   const closeModal = () => {
@@ -57,7 +57,7 @@ export function useCrudModal<T extends Record<string, any>>(options: UseCrudModa
       submitLoading.value = true
       
       if (onSubmit) {
-        await onSubmit(isEdit.value, form)
+        await onSubmit(isEdit.value, form as T)
       }
       
       window.$message.success('操作成功')

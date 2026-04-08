@@ -1,253 +1,459 @@
 <template>
-  <div class="space-y-4">
-    <n-card :bordered="false">
-      <div class="flex-between mb-4">
-        <div class="flex items-center gap-2">
-          <span class="i-carbon-chat-bot text-primary text-xl"></span>
-          <span class="text-lg font-semibold">面试助手</span>
+  <div class="flex flex-col h-full">
+    <div class="mb-6">
+      <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+        <span class="i-carbon-user-multiple text-primary text-2xl"></span>
+        面试记录
+      </h1>
+      <p class="text-gray-500 mt-1">查看和管理所有模拟面试记录</p>
+    </div>
+
+    <div v-if="stats" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <n-card class="hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3">
+          <div class="p-3 rounded-lg bg-primary">
+            <span class="i-carbon-user-multiple text-white text-2xl"></span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">面试总数</p>
+            <p class="text-2xl font-semibold text-gray-900">{{ stats.totalCount }}</p>
+          </div>
         </div>
-        <n-space>
-          <n-button @click="showQuestionBank = true">
-            <template #icon>
-              <span class="i-carbon-catalog"></span>
-            </template>
-            题库管理
-          </n-button>
-          <n-button type="primary" @click="startInterview">
-            <template #icon>
-              <span class="i-carbon-play-filled"></span>
-            </template>
-            开始模拟面试
-          </n-button>
-        </n-space>
-      </div>
+      </n-card>
 
-      <n-tabs v-model:value="activeTab" type="line" animated>
-        <n-tab-pane name="questions" tab="面试题库">
-          <div class="flex flex-wrap gap-3 mb-4">
-            <n-select
-              v-model:value="questionFilter.category"
-              :options="categoryOptions"
-              placeholder="题目分类"
-              class="w-40"
-              clearable
-            />
-            <n-select
-              v-model:value="questionFilter.difficulty"
-              :options="difficultyOptions"
-              placeholder="难度等级"
-              class="w-32"
-              clearable
-            />
-            <n-button type="primary" @click="loadQuestions">
-              <template #icon>
-                <span class="i-carbon-search"></span>
-              </template>
-              筛选
-            </n-button>
+      <n-card class="hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3">
+          <div class="p-3 rounded-lg bg-emerald-500">
+            <span class="i-carbon-checkmark-filled text-white text-2xl"></span>
           </div>
+          <div>
+            <p class="text-sm text-gray-500">已完成</p>
+            <p class="text-2xl font-semibold text-gray-900">{{ stats.completedCount }}</p>
+          </div>
+        </div>
+      </n-card>
 
-          <n-list hoverable>
-            <n-list-item v-for="question in questionList" :key="question.id">
-              <n-thing :title="question.title">
-                <template #header-extra>
-                  <n-tag :type="getDifficultyType(question.difficulty)" size="small">
-                    {{ getDifficultyLabel(question.difficulty) }}
-                  </n-tag>
-                </template>
-                <template #description>
-                  <n-space>
-                    <n-tag v-for="tag in question.tags" :key="tag" size="small" round>
-                      {{ tag }}
-                    </n-tag>
-                  </n-space>
-                </template>
-              </n-thing>
-              <template #suffix>
-                <n-space>
-                  <n-button size="small" quaternary type="primary" @click="viewAnswer(question)">
-                    查看答案
-                  </n-button>
-                  <n-button size="small" quaternary type="info" @click="practice(question)">
-                    练习
-                  </n-button>
-                </n-space>
-              </template>
-            </n-list-item>
-          </n-list>
-        </n-tab-pane>
+      <n-card class="hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3">
+          <div class="p-3 rounded-lg bg-indigo-500">
+            <span class="i-carbon-chart-line text-white text-2xl"></span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">平均分数</p>
+            <p class="text-2xl font-semibold text-gray-900">
+              {{ stats.averageScore }}<span class="text-base font-normal text-gray-400 ml-1">分</span>
+            </p>
+          </div>
+        </div>
+      </n-card>
+    </div>
 
-        <n-tab-pane name="history" tab="面试记录">
-          <n-data-table
-            :columns="historyColumns"
-            :data="historyData"
+    <n-card class="mb-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+          <span class="i-carbon-search text-gray-400"></span>
+          <n-input
+            v-model:value="searchTerm"
+            placeholder="搜索简历名称..."
             :bordered="false"
+            size="small"
+            class="flex-1"
           />
-        </n-tab-pane>
-
-        <n-tab-pane name="analysis" tab="数据分析">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <n-card>
-              <n-statistic label="已练习题目" :value="statistics.totalQuestions">
-                <template #suffix>道</template>
-              </n-statistic>
-            </n-card>
-            <n-card>
-              <n-statistic label="平均得分" :value="statistics.avgScore">
-                <template #suffix>分</template>
-              </n-statistic>
-            </n-card>
-            <n-card>
-              <n-statistic label="模拟面试次数" :value="statistics.interviewCount">
-                <template #suffix>次</template>
-              </n-statistic>
-            </n-card>
-          </div>
-        </n-tab-pane>
-      </n-tabs>
+        </div>
+      </div>
     </n-card>
 
-    <n-modal v-model:show="answerVisible" preset="card" title="题目答案" class="w-[600px]" :bordered="false">
-      <n-descriptions label-placement="top" :column="1">
-        <n-descriptions-item label="题目">
-          {{ currentQuestion?.title }}
-        </n-descriptions-item>
-        <n-descriptions-item label="参考答案">
-          <n-card embedded class="bg-gray-50">
-            {{ currentQuestion?.answer }}
+    <div class="flex-1 min-h-0">
+      <n-spin :show="loading" class="h-full">
+        <template v-if="!loading && filteredInterviews.length === 0">
+          <n-card class="text-center py-20">
+            <span class="i-carbon-user-multiple text-gray-300 text-5xl mb-4 block"></span>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">暂无面试记录</h3>
+            <p class="text-gray-500">开始一次模拟面试后，记录将显示在这里</p>
           </n-card>
-        </n-descriptions-item>
-      </n-descriptions>
-    </n-modal>
+        </template>
+
+        <template v-if="!loading && filteredInterviews.length > 0">
+          <n-card>
+            <n-data-table
+              :columns="columns"
+              :data="filteredInterviews"
+              :bordered="false"
+              :row-key="(row: InterviewWithResume) => row.sessionId"
+              @update:checked-row-keys="handleCheck"
+            />
+          </n-card>
+        </template>
+      </n-spin>
+    </div>
+
+    <n-modal
+      v-model:show="showDeleteConfirm"
+      preset="dialog"
+      title="确认删除"
+      content="确定要删除这条面试记录吗？删除后无法恢复。"
+      positive-text="确定"
+      negative-text="取消"
+      type="warning"
+      :loading="deletingSessionId !== null"
+      @positive-click="handleDeleteConfirm"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, h, onMounted } from 'vue'
-import { NButton, NSpace, NTag, NRate } from 'naive-ui'
+/**
+ * 面试历史列表页面
+ * - 显示所有面试记录
+ * - 统计信息展示
+ * - 搜索和筛选
+ * - 导出PDF
+ * - 删除记录
+ * - 跳转到面试详情
+ */
+import { ref, computed, h, onMounted, onUnmounted, watch, type VNode } from 'vue'
+import { useRouter } from 'vue-router'
+import { NButton, NTag, NProgress, NSpace } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
+import type { ProgressStatus } from 'naive-ui'
+import { historyApi } from '@/api/history'
+import { formatFullDateTime } from '@/utils/date'
+import type { InterviewItem } from '@/types/resume'
 
-interface Question {
-  id: number
-  title: string
-  category: string
-  difficulty: number
-  tags: string[]
-  answer: string
+const router = useRouter()
+
+interface InterviewWithResume extends InterviewItem {
+  resumeId: number
+  resumeFilename: string
 }
 
-interface HistoryRecord {
-  id: number
-  date: string
-  questionCount: number
-  score: number
-  duration: string
+interface InterviewStats {
+  totalCount: number
+  completedCount: number
+  averageScore: number
 }
 
-const activeTab = ref('questions')
-const showQuestionBank = ref(false)
-const answerVisible = ref(false)
-const currentQuestion = ref<Question | null>(null)
+const interviews = ref<InterviewWithResume[]>([])
+const stats = ref<InterviewStats | null>(null)
+const loading = ref(true)
+const searchTerm = ref('')
+const deletingSessionId = ref<string | null>(null)
+const deleteItem = ref<InterviewWithResume | null>(null)
+const showDeleteConfirm = ref(false)
+const exporting = ref<string | null>(null)
+let pollingTimer: number | null = null
 
-const questionFilter = reactive({
-  category: null as string | null,
-  difficulty: null as number | null
+const isCompletedStatus = (status: string): boolean => {
+  return status === 'COMPLETED' || status === 'EVALUATED'
+}
+
+const isEvaluateCompleted = (interview: InterviewWithResume): boolean => {
+  if (interview.evaluateStatus === 'COMPLETED') return true
+  if (interview.status === 'EVALUATED') return true
+  return false
+}
+
+const isEvaluating = (interview: InterviewWithResume): boolean => {
+  return interview.evaluateStatus === 'PENDING' || interview.evaluateStatus === 'PROCESSING'
+}
+
+const isEvaluateFailed = (interview: InterviewWithResume): boolean => {
+  return interview.evaluateStatus === 'FAILED'
+}
+
+const getStatusIcon = (interview: InterviewWithResume) => {
+  if (isEvaluateFailed(interview)) {
+    return { icon: 'i-carbon-warning-alt', color: 'text-red-500' }
+  }
+  if (isEvaluating(interview)) {
+    return { icon: 'i-carbon-renew animate-spin', color: 'text-blue-500' }
+  }
+  if (isEvaluateCompleted(interview)) {
+    return { icon: 'i-carbon-checkmark-filled', color: 'text-green-500' }
+  }
+  if (interview.status === 'IN_PROGRESS') {
+    return { icon: 'i-carbon-play-filled', color: 'text-blue-500' }
+  }
+  return { icon: 'i-carbon-time', color: 'text-yellow-500' }
+}
+
+const getStatusText = (interview: InterviewWithResume): string => {
+  if (isEvaluateFailed(interview)) return '评估失败'
+  if (isEvaluating(interview)) {
+    return interview.evaluateStatus === 'PROCESSING' ? '评估中' : '等待评估'
+  }
+  if (isEvaluateCompleted(interview)) return '已完成'
+  if (interview.status === 'IN_PROGRESS') return '进行中'
+  if (isCompletedStatus(interview.status)) return '已提交'
+  return '已创建'
+}
+
+const getScoreColor = (score: number): ProgressStatus => {
+  if (score >= 80) return 'success'
+  if (score >= 60) return 'warning'
+  return 'error'
+}
+
+const filteredInterviews = computed(() => {
+  return interviews.value.filter(interview =>
+    interview.resumeFilename.toLowerCase().includes(searchTerm.value.toLowerCase())
+  )
 })
 
-const categoryOptions = [
-  { label: 'Java', value: 'java' },
-  { label: '前端', value: 'frontend' },
-  { label: '数据库', value: 'database' },
-  { label: '系统设计', value: 'system' }
-]
-
-const difficultyOptions = [
-  { label: '简单', value: 1 },
-  { label: '中等', value: 2 },
-  { label: '困难', value: 3 }
-]
-
-const statistics = reactive({
-  totalQuestions: 128,
-  avgScore: 85.5,
-  interviewCount: 12
-})
-
-const questionList = ref<Question[]>([])
-
-const historyColumns: DataTableColumns<HistoryRecord> = [
-  { title: '日期', key: 'date', width: 180 },
-  { title: '题目数量', key: 'questionCount', width: 100 },
-  { 
-    title: '得分', 
-    key: 'score', 
-    width: 150,
+const columns: DataTableColumns<InterviewWithResume> = [
+  {
+    title: '关联简历',
+    key: 'resumeFilename',
     render(row) {
-      return h(NRate, { value: row.score / 20, readonly: true, size: 'small' })
+      return h('div', { class: 'flex items-center gap-3' }, [
+        h('span', { class: 'i-carbon-document text-gray-400' }),
+        h('div', {}, [
+          h('p', { class: 'font-medium text-gray-900' }, row.resumeFilename),
+          h('p', { class: 'text-xs text-gray-400' }, `#${row.sessionId.slice(-8)}`)
+        ])
+      ])
     }
   },
-  { title: '用时', key: 'duration', width: 100 },
+  {
+    title: '题目数',
+    key: 'totalQuestions',
+    width: 100,
+    render(row) {
+      return h(NTag, { type: 'default', bordered: false }, {
+        default: () => `${row.totalQuestions} 题`
+      })
+    }
+  },
+  {
+    title: '状态',
+    key: 'status',
+    width: 120,
+    render(row) {
+      const { icon, color } = getStatusIcon(row)
+      return h('div', { class: 'flex items-center gap-2' }, [
+        h('span', { class: `${icon} ${color}` }),
+        h('span', { class: 'text-sm text-gray-600' }, getStatusText(row))
+      ])
+    }
+  },
+  {
+    title: '得分',
+    key: 'overallScore',
+    width: 150,
+    render(row) {
+      if (isEvaluateCompleted(row) && row.overallScore !== null) {
+        return h('div', { class: 'flex items-center gap-3' }, [
+          h(NProgress, {
+            type: 'line',
+            percentage: row.overallScore,
+            showIndicator: false,
+            height: 8,
+            status: getScoreColor(row.overallScore),
+            class: 'w-16'
+          }),
+          h('span', { class: 'font-bold text-gray-900' }, row.overallScore)
+        ])
+      }
+      if (isEvaluating(row)) {
+        return h('span', { class: 'text-blue-500 text-sm' }, '生成中...')
+      }
+      if (isEvaluateFailed(row)) {
+        return h('span', { class: 'text-red-500 text-sm', title: row.evaluateError || '' }, '失败')
+      }
+      return h('span', { class: 'text-gray-400' }, '-')
+    }
+  },
+  {
+    title: '创建时间',
+    key: 'createdAt',
+    width: 180,
+    render(row) {
+      return h('span', { class: 'text-sm text-gray-500' }, formatFullDateTime(row.createdAt))
+    }
+  },
   {
     title: '操作',
     key: 'actions',
-    width: 100,
-    render() {
-      return h(NButton, { size: 'small', quaternary: true, type: 'primary' }, { default: () => '查看详情' })
+    width: 120,
+    align: 'right',
+    render(row) {
+      const buttons: VNode[] = []
+      
+      if (isEvaluateCompleted(row)) {
+        buttons.push(
+          h(NButton, {
+            size: 'small',
+            quaternary: true,
+            type: 'primary',
+            loading: exporting.value === row.sessionId,
+            disabled: exporting.value === row.sessionId,
+            onClick: (e: Event) => {
+              e.stopPropagation()
+              handleExport(row.sessionId)
+            }
+          }, {
+            icon: () => h('span', { class: 'i-carbon-download' }),
+            default: () => '导出'
+          })
+        )
+      }
+      
+      buttons.push(
+        h(NButton, {
+          size: 'small',
+          quaternary: true,
+          type: 'error',
+          disabled: deletingSessionId.value === row.sessionId,
+          onClick: (e: Event) => {
+            e.stopPropagation()
+            handleDeleteClick(row)
+          }
+        }, {
+          icon: () => h('span', { class: 'i-carbon-trash-can' }),
+          default: () => '删除'
+        })
+      )
+      
+      buttons.push(
+        h(NButton, {
+          size: 'small',
+          quaternary: true,
+          type: 'primary',
+          onClick: () => viewInterview(row.sessionId, row.resumeId)
+        }, {
+          icon: () => h('span', { class: 'i-carbon-arrow-right' }),
+          default: () => '查看'
+        })
+      )
+      
+      return h(NSpace, { size: 'small' }, { default: () => buttons })
     }
   }
 ]
 
-const historyData = ref<HistoryRecord[]>([])
-
-const getDifficultyType = (difficulty: number) => {
-  const map: Record<number, 'success' | 'warning' | 'error'> = {
-    1: 'success',
-    2: 'warning',
-    3: 'error'
+const loadAllInterviews = async (isPolling = false) => {
+  if (!isPolling) {
+    loading.value = true
   }
-  return map[difficulty] || 'info'
-}
+  
+  try {
+    const resumes = await historyApi.getResumes()
+    const allInterviews: InterviewWithResume[] = []
 
-const getDifficultyLabel = (difficulty: number) => {
-  const map: Record<number, string> = {
-    1: '简单',
-    2: '中等',
-    3: '困难'
+    for (const resume of resumes) {
+      const detail = await historyApi.getResumeDetail(resume.id)
+      if (detail.interviews && detail.interviews.length > 0) {
+        detail.interviews.forEach(interview => {
+          allInterviews.push({
+            ...interview,
+            resumeId: resume.id,
+            resumeFilename: resume.filename
+          })
+        })
+      }
+    }
+
+    allInterviews.sort((a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+
+    interviews.value = allInterviews
+
+    const evaluated = allInterviews.filter(i => isEvaluateCompleted(i))
+    const totalScore = evaluated.reduce((sum, i) => sum + (i.overallScore || 0), 0)
+    stats.value = {
+      totalCount: allInterviews.length,
+      completedCount: evaluated.length,
+      averageScore: evaluated.length > 0 ? Math.round(totalScore / evaluated.length) : 0,
+    }
+  } catch (err) {
+    console.error('加载面试记录失败', err)
+  } finally {
+    if (!isPolling) {
+      loading.value = false
+    }
   }
-  return map[difficulty] || '未知'
 }
 
-const loadQuestions = async () => {
-  questionList.value = [
-    { id: 1, title: '请解释Java中的多态是什么？', category: 'java', difficulty: 2, tags: ['Java', 'OOP'], answer: '多态是指同一个方法调用，由于对象不同可能会有不同的行为...' },
-    { id: 2, title: 'Vue3中的响应式原理是什么？', category: 'frontend', difficulty: 2, tags: ['Vue', '前端'], answer: 'Vue3使用Proxy来实现响应式...' },
-    { id: 3, title: '请解释MySQL的索引结构', category: 'database', difficulty: 3, tags: ['MySQL', '索引'], answer: 'MySQL使用B+树作为索引结构...' }
-  ]
+const startPollingIfNeeded = () => {
+  const hasEvaluating = interviews.value.some(i => isEvaluating(i))
+  
+  if (hasEvaluating) {
+    if (!pollingTimer) {
+      pollingTimer = window.setInterval(() => {
+        loadAllInterviews(true)
+      }, 3000)
+    }
+  } else {
+    if (pollingTimer) {
+      clearInterval(pollingTimer)
+      pollingTimer = null
+    }
+  }
 }
 
-const viewAnswer = (question: Question) => {
-  currentQuestion.value = question
-  answerVisible.value = true
+const handleDeleteClick = (interview: InterviewWithResume) => {
+  deleteItem.value = interview
+  showDeleteConfirm.value = true
 }
 
-const practice = (question: Question) => {
-  window.$message.info(`开始练习: ${question.title}`)
+const handleDeleteConfirm = async () => {
+  if (!deleteItem.value) return
+  
+  deletingSessionId.value = deleteItem.value.sessionId
+  try {
+    await historyApi.deleteInterview(deleteItem.value.sessionId)
+    await loadAllInterviews()
+    showDeleteConfirm.value = false
+    deleteItem.value = null
+  } catch (err) {
+    window.$message.error('删除失败，请稍后重试')
+  } finally {
+    deletingSessionId.value = null
+  }
 }
 
-const startInterview = () => {
-  window.$message.info('模拟面试功能开发中...')
+const handleExport = async (sessionId: string) => {
+  exporting.value = sessionId
+  try {
+    const blob = await historyApi.exportInterviewPdf(sessionId)
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `面试报告_${sessionId.slice(-8)}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(url)
+  } catch (err) {
+    window.$message.error('导出失败，请重试')
+  } finally {
+    exporting.value = null
+  }
 }
 
-const loadHistory = () => {
-  historyData.value = [
-    { id: 1, date: '2024-01-15 14:30', questionCount: 10, score: 85, duration: '25分钟' },
-    { id: 2, date: '2024-01-14 10:00', questionCount: 15, score: 92, duration: '35分钟' },
-    { id: 3, date: '2024-01-13 16:00', questionCount: 8, score: 78, duration: '20分钟' }
-  ]
+const viewInterview = (sessionId: string, resumeId?: number) => {
+  router.push({
+    path: `/interview/session`,
+    query: { sessionId, resumeId }
+  })
+}
+
+const handleCheck = () => {
 }
 
 onMounted(() => {
-  loadQuestions()
-  loadHistory()
+  loadAllInterviews()
+})
+
+onUnmounted(() => {
+  if (pollingTimer) {
+    clearInterval(pollingTimer)
+    pollingTimer = null
+  }
+})
+
+watch(interviews, () => {
+  startPollingIfNeeded()
 })
 </script>
