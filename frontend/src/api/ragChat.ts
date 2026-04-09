@@ -13,82 +13,42 @@ import type {
 } from '@/types/knowledge'
 import type { Result } from '@/types/resume'
 
-const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:8080'
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:8901'
 
 export const ragChatApi = {
-  /**
-   * 创建新会话
-   * 
-   * @param knowledgeBaseIds 知识库ID列表
-   * @param title 会话标题
-   * @returns 会话信息
-   */
   async createSession(knowledgeBaseIds: number[], title?: string): Promise<RagChatSession> {
-    return request.post<Result<RagChatSession>>('/api/rag-chat/sessions', {
+    return request.post<Result<RagChatSession>>('/rag-chat/sessions', {
       knowledgeBaseIds,
       title,
     }).then((res) => res.data)
   },
 
-  /**
-   * 获取会话列表
-   * 
-   * @returns 会话列表
-   */
   async listSessions(): Promise<RagChatSessionListItem[]> {
-    return request.get<Result<RagChatSessionListItem[]>>('/api/rag-chat/sessions')
+    return request.get<Result<RagChatSessionListItem[]>>('/rag-chat/sessions')
       .then((res) => res.data)
   },
 
-  /**
-   * 获取会话详情
-   * 
-   * @param sessionId 会话ID
-   * @returns 会话详情
-   */
   async getSessionDetail(sessionId: number): Promise<RagChatSessionDetail> {
-    return request.get<Result<RagChatSessionDetail>>(`/api/rag-chat/sessions/${sessionId}`)
+    return request.get<Result<RagChatSessionDetail>>(`/rag-chat/sessions/${sessionId}`)
       .then((res) => res.data)
   },
 
-  /**
-   * 更新会话标题
-   * 
-   * @param sessionId 会话ID
-   * @param title 新标题
-   */
   async updateSessionTitle(sessionId: number, title: string): Promise<void> {
-    return request.put(`/api/rag-chat/sessions/${sessionId}/title`, { title })
+    return request.put(`/rag-chat/sessions/${sessionId}/title`, { title })
   },
 
-  /**
-   * 更新会话知识库
-   * 
-   * @param sessionId 会话ID
-   * @param knowledgeBaseIds 知识库ID列表
-   */
   async updateKnowledgeBases(sessionId: number, knowledgeBaseIds: number[]): Promise<void> {
-    return request.put(`/api/rag-chat/sessions/${sessionId}/knowledge-bases`, {
+    return request.put(`/rag-chat/sessions/${sessionId}/knowledge-bases`, {
       knowledgeBaseIds,
     })
   },
 
-  /**
-   * 切换会话置顶状态
-   * 
-   * @param sessionId 会话ID
-   */
   async togglePin(sessionId: number): Promise<void> {
-    return request.put(`/api/rag-chat/sessions/${sessionId}/pin`)
+    return request.put(`/rag-chat/sessions/${sessionId}/pin`)
   },
 
-  /**
-   * 删除会话
-   * 
-   * @param sessionId 会话ID
-   */
   async deleteSession(sessionId: number): Promise<void> {
-    return request.delete(`/api/rag-chat/sessions/${sessionId}`)
+    return request.delete(`/rag-chat/sessions/${sessionId}`)
   },
 
   /**

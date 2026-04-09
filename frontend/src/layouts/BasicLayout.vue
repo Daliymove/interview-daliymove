@@ -42,13 +42,13 @@
         <div class="flex items-center gap-3">
           <n-tooltip trigger="hover">
             <template #trigger>
-              <n-button quaternary circle size="small">
+              <n-button quaternary circle size="small" @click="openApiDoc">
                 <template #icon>
                   <span class="i-carbon-help text-lg text-gray-500"></span>
                 </template>
               </n-button>
             </template>
-            帮助文档
+            API 文档
           </n-tooltip>
           <n-dropdown :options="userOptions" @select="handleUserSelect">
             <div class="flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
@@ -64,7 +64,7 @@
 
       <n-layout-content class="p-5 bg-gray-50" content-style="height: calc(100vh - 56px); overflow: auto;">
         <router-view v-slot="{ Component, route: currentRoute }">
-          <transition name="fade-slide">
+          <transition name="fade" mode="out-in">
             <component :is="Component" :key="currentRoute.path" />
           </transition>
         </router-view>
@@ -191,21 +191,21 @@ const handleUserSelect = async (key: string) => {
     router.push('/login')
   }
 }
+
+/** 打开 API 文档 */
+const openApiDoc = () => {
+  window.open('http://localhost:8901/api/swagger-ui/index.html', '_blank')
+}
 </script>
 
 <style scoped>
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: all 0.3s ease;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
 }
 
-.fade-slide-enter-from {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
-  transform: translateX(-10px);
-}
-
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateX(10px);
 }
 </style>

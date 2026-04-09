@@ -94,8 +94,4 @@ const loadStats = async () => {
     console.error('加载统计信息失败:', error)
   }
 }
-
-onMounted(() => {
-  loadStats()
-})
 </script>

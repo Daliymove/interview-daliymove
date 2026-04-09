@@ -33,10 +33,10 @@
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
-        <!-- Knife4j API 文档 -->
+        <!-- SpringDoc OpenAPI -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
 
         <dependency>

@@ -30,9 +30,14 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         "/auth/login",
                         "/auth/logout",
                         "/doc.html",
+                        "/doc.html/**",
                         "/webjars/**",
                         "/swagger-resources/**",
-                        "/v3/api-docs/**"
+                        "/swagger-resources",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html"
                 );
     }
 
