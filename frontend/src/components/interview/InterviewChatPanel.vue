@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col h-[calc(100vh-200px)] max-w-4xl mx-auto">
-    <n-card class="mb-4">
+  <div class="flex flex-col max-w-4xl mx-auto pb-4">
+    <n-card class="mb-4 sticky top-0 z-10">
       <div class="flex items-center justify-between mb-3">
         <span class="text-sm font-semibold text-slate-700">
           题目 {{ currentQuestion ? currentQuestion.questionIndex + 1 : 0 }} / {{ session?.totalQuestions || 0 }}
@@ -16,45 +16,45 @@
       />
     </n-card>
 
-    <n-card class="flex-1 overflow-hidden flex flex-col min-h-0">
-      <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+    <n-card class="mb-4">
+      <div class="space-y-4 px-6 py-4">
         <MessageBubble
           v-for="(msg, i) in messages"
           :key="i"
           :message="msg"
         />
       </div>
+    </n-card>
 
-      <div class="border-t border-slate-200 p-4 bg-slate-50">
-        <div class="flex gap-3">
-          <n-input
-            v-model:value="answer"
-            type="textarea"
-            placeholder="输入你的回答... (Ctrl/Cmd + Enter 提交)"
-            :rows="3"
+    <n-card class="sticky bottom-0">
+      <div class="flex gap-3">
+        <n-input
+          v-model:value="answer"
+          type="textarea"
+          placeholder="输入你的回答... (Ctrl/Cmd + Enter 提交)"
+          :rows="3"
+          :disabled="isSubmitting"
+          @keydown="handleKeyPress"
+        />
+        <div class="flex flex-col gap-2">
+          <n-button
+            type="primary"
+            :disabled="!answer.trim() || isSubmitting"
+            :loading="isSubmitting"
+            @click="handleSubmit"
+          >
+            <template #icon>
+              <span class="i-carbon-send"></span>
+            </template>
+            提交
+          </n-button>
+          <n-button
+            quaternary
             :disabled="isSubmitting"
-            @keydown="handleKeyPress"
-          />
-          <div class="flex flex-col gap-2">
-            <n-button
-              type="primary"
-              :disabled="!answer.trim() || isSubmitting"
-              :loading="isSubmitting"
-              @click="handleSubmit"
-            >
-              <template #icon>
-                <span class="i-carbon-send"></span>
-              </template>
-              提交
-            </n-button>
-            <n-button
-              quaternary
-              :disabled="isSubmitting"
-              @click="handleShowCompleteConfirm"
-            >
-              提前交卷
-            </n-button>
-          </div>
+            @click="handleShowCompleteConfirm"
+          >
+            提前交卷
+          </n-button>
         </div>
       </div>
     </n-card>

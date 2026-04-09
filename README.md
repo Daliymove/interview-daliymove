@@ -130,8 +130,8 @@ mvn spring-boot:run -pl daliymove-server
 ```
 
 后端启动后访问:
-- API: http://localhost:8080/api
-- API文档: http://localhost:8080/api/doc.html
+- API: http://localhost:8901/api
+- API文档: http://localhost:8901/api/doc.html
 
 ### 前端启动
 

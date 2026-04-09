@@ -44,7 +44,7 @@ export const historyApi = {
    * @returns 面试详情
    */
   async getInterviewDetail(sessionId: string): Promise<InterviewDetail> {
-    return request.get<Result<InterviewDetail>>(`/api/interview/sessions/${sessionId}/details`)
+    return request.get<Result<InterviewDetail>>(`/interview/sessions/${sessionId}/details`)
       .then((res) => res.data)
   },
 
@@ -68,7 +68,7 @@ export const historyApi = {
    * @returns PDF Blob
    */
   async exportInterviewPdf(sessionId: string): Promise<Blob> {
-    const response = await request.getInstance().get(`/api/interview/sessions/${sessionId}/export`, {
+    const response = await request.getInstance().get(`/interview/sessions/${sessionId}/export`, {
       responseType: 'blob',
     })
     return response.data
@@ -89,7 +89,7 @@ export const historyApi = {
    * @param sessionId 会话ID
    */
   async deleteInterview(sessionId: string): Promise<void> {
-    return request.delete(`/api/interview/sessions/${sessionId}`)
+    return request.delete(`/interview/sessions/${sessionId}`)
   },
 
   /**

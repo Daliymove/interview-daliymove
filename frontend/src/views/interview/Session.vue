@@ -1,45 +1,45 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
-        <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+  <div class="flex flex-col pb-8">
+    <div class="max-w-4xl mx-auto w-full">
+      <div class="text-center mb-10">
+        <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
           <span class="i-carbon-microphone text-white text-2xl"></span>
         </div>
-        模拟面试
-      </h1>
-      <p class="text-slate-500">{{ stageSubtitles[stage] }}</p>
-    </div>
+        <h1 class="text-3xl font-bold text-slate-900 mb-3">模拟面试</h1>
+        <p class="text-slate-600 text-lg">{{ stageSubtitles[stage] }}</p>
+      </div>
 
-    <div class="flex-1 min-h-0">
-      <n-spin :show="checkingUnfinished" class="h-full">
-      <template v-if="stage === 'config'">
-        <InterviewConfigPanel
-          :question-count="questionCount"
-          :is-creating="isCreating"
-          :checking-unfinished="checkingUnfinished"
-          :unfinished-session="unfinishedSession"
-          :resume-text="resumeText"
-          :error="error"
-          @question-count-change="handleQuestionCountChange"
-          @start="startInterview"
-          @continue-unfinished="handleContinueUnfinished"
-          @start-new="handleStartNew"
-          @back="handleBack"
-        />
-      </template>
-
-      <template v-if="stage === 'interview' && session && currentQuestion">
-          <InterviewChatPanel
-            :session="session"
-            :current-question="currentQuestion"
-            :messages="messages"
-            :is-submitting="isSubmitting"
-            :on-show-complete-confirm="handleShowCompleteConfirm"
-            @answer-change="handleAnswerChange"
-            @submit="handleSubmitAnswer"
+      <div class="flex-1">
+        <n-spin :show="checkingUnfinished" class="h-full">
+        <template v-if="stage === 'config'">
+          <InterviewConfigPanel
+            :question-count="questionCount"
+            :is-creating="isCreating"
+            :checking-unfinished="checkingUnfinished"
+            :unfinished-session="unfinishedSession"
+            :resume-text="resumeText"
+            :error="error"
+            @question-count-change="handleQuestionCountChange"
+            @start="startInterview"
+            @continue-unfinished="handleContinueUnfinished"
+            @start-new="handleStartNew"
+            @back="handleBack"
           />
         </template>
-      </n-spin>
+
+        <template v-if="stage === 'interview' && session && currentQuestion">
+            <InterviewChatPanel
+              :session="session"
+              :current-question="currentQuestion"
+              :messages="messages"
+              :is-submitting="isSubmitting"
+              :on-show-complete-confirm="handleShowCompleteConfirm"
+              @answer-change="handleAnswerChange"
+              @submit="handleSubmitAnswer"
+            />
+          </template>
+        </n-spin>
+      </div>
     </div>
 
     <n-modal

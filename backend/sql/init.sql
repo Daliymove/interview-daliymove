@@ -11,7 +11,7 @@
  Target Server Version : 80045
  File Encoding         : 65001
 
- Date: 07/04/2026 19:20:18
+ Date: 09/04/2026 11:02:16
 */
 
 SET NAMES utf8mb4;
@@ -108,7 +108,7 @@ CREATE TABLE `interview_answer`  (
                                      UNIQUE INDEX `uk_interview_answer_session_question`(`session_id`, `question_index`) USING BTREE,
                                      INDEX `idx_interview_answer_session_question`(`session_id`, `question_index`) USING BTREE,
                                      CONSTRAINT `fk_interview_answer_session` FOREIGN KEY (`session_id`) REFERENCES `interview_session` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '面试答案表 - 存储面试问答对和评估结果' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '面试答案表 - 存储面试问答对和评估结果' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for interview_session
@@ -138,7 +138,12 @@ CREATE TABLE `interview_session`  (
                                       INDEX `idx_interview_session_resume_status_created`(`resume_id`, `status`, `created_at`) USING BTREE,
                                       INDEX `idx_interview_session_status`(`status`) USING BTREE,
                                       CONSTRAINT `fk_interview_session_resume` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '面试会话表 - 存储面试会话信息' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '面试会话表 - 存储面试会话信息' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of interview_session
+-- ----------------------------
+INSERT INTO `interview_session` VALUES (1, 'd121fe6a1fb54d01', 7, 16, 0, 'CREATED', '[{\"questionIndex\":0,\"question\":\"在IBMS改造项目中，你提到使用Spring Boot Starter封装第三方平台对接模块以实现自动配置和易于拆卸。请详细描述你是如何设计这个Starter的？其中自动配置类与条件装配注解（如@ConditionalOnProperty）是如何协同工作的？\",\"type\":\"PROJECT\",\"category\":\"项目架构 - 组件封装与自动配置\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":false,\"parentQuestionIndex\":null},{\"questionIndex\":1,\"question\":\"在外部化配置第三方平台信息时，如果多环境配置存在冲突或需要动态刷新，你会如何结合配置中心实现配置的优雅热更新而不重启服务？\",\"type\":\"PROJECT\",\"category\":\"项目架构 - 组件封装与自动配置（追问1）\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":true,\"parentQuestionIndex\":0},{\"questionIndex\":2,\"question\":\"在优化智慧社区平台“一张图”统计接口时，你使用了CompletableFuture配合自定义线程池来提升查询性能。请说明你是如何评估业务特征并设置该线程池核心参数（corePoolSize、maxPoolSize、workQueue）的？\",\"type\":\"PROJECT\",\"category\":\"项目实战 - 异步编程与性能调优\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":false,\"parentQuestionIndex\":null},{\"questionIndex\":3,\"question\":\"在多个CompletableFuture并行执行的过程中，如果其中一个子任务抛出异常或执行超时，你是如何设计异常捕获、降级或熔断策略以保证整体接口可用性的？\",\"type\":\"PROJECT\",\"category\":\"项目实战 - 异步编程与性能调优（追问1）\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":true,\"parentQuestionIndex\":2},{\"questionIndex\":4,\"question\":\"简历中提到针对“一张图”接口采用了子查询及内连接优化深度分页，并为数据域字段建立前缀索引。请从MySQL底层B+树和索引回表机制的角度，解释深度分页为什么会导致性能骤降？你的子查询优化方案具体是如何减少IO开销的？\",\"type\":\"MYSQL\",\"category\":\"MySQL - 索引原理与SQL调优\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":false,\"parentQuestionIndex\":null},{\"questionIndex\":5,\"question\":\"在建立前缀索引时，你是如何权衡前缀长度与区分度（Cardinality）的？如果后续业务要求对该字段进行精确等值查询，当前前缀索引策略是否仍然适用，为什么？\",\"type\":\"MYSQL\",\"category\":\"MySQL - 索引原理与SQL调优（追问1）\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":true,\"parentQuestionIndex\":4},{\"questionIndex\":6,\"question\":\"在人脸识别平台中，你通过优化Logstash同步SQL发现原表使用了MyISAM引擎和分区表，调整查询顺序后耗时大幅下降。请对比MyISAM和InnoDB在并发读写、锁机制和事务支持上的核心差异，并解释为什么先利用联合索引过滤年月日能显著提升执行计划效率？\",\"type\":\"MYSQL\",\"category\":\"MySQL - 存储引擎与执行计划优化\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":false,\"parentQuestionIndex\":null},{\"questionIndex\":7,\"question\":\"面对海量抓拍记录同步场景，除了调整SQL查询顺序，你还会考虑哪些架构或数据库层面的方案（如CDC、分库分表、读写分离）来进一步提升同步吞吐量并避免对业务主库造成过大压力？\",\"type\":\"MYSQL\",\"category\":\"MySQL - 存储引擎与执行计划优化（追问1）\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":true,\"parentQuestionIndex\":6},{\"questionIndex\":8,\"question\":\"在智慧社区项目中，对于访问频繁且更新频率低的字典数据，你采用了双写方案将数据缓存至Redis。请说明你具体是如何在业务代码中实现数据库与Redis双写的？在并发写入或网络瞬断情况下，如何保证缓存与数据库的最终一致性？\",\"type\":\"REDIS\",\"category\":\"Redis - 缓存架构与数据一致性\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":false,\"parentQuestionIndex\":null},{\"questionIndex\":9,\"question\":\"如果双写过程中Redis写入失败但MySQL已成功，你的补偿机制或重试策略是什么？对比应用层双写，你是否评估过基于Canal监听MySQL binlog异步更新缓存的方案，各自的优缺点是什么？\",\"type\":\"REDIS\",\"category\":\"Redis - 缓存架构与数据一致性（追问1）\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":true,\"parentQuestionIndex\":8},{\"questionIndex\":10,\"question\":\"项目涉及大量设备状态管理与高频告警处理，请结合Redis底层数据结构，说明你会如何选择合适的数据结构来存储“设备实时在线状态”或“设备最近N条告警流水”？如果Redis内存使用率达到maxmemory限制，你配置的淘汰策略是什么，依据是什么？\",\"type\":\"REDIS\",\"category\":\"Redis - 数据结构选型与内存管理\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":false,\"parentQuestionIndex\":null},{\"questionIndex\":11,\"question\":\"在海量设备接入的高并发场景下，如果Redis发生主从切换或AOF重写延迟，可能导致部分设备状态丢失或告警乱序，你会如何设计架构或引入消息队列来规避此类数据不一致风险？\",\"type\":\"REDIS\",\"category\":\"Redis - 数据结构选型与内存管理（追问1）\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":true,\"parentQuestionIndex\":10},{\"questionIndex\":12,\"question\":\"简历中注明熟悉JVM常见概念，并在项目中处理过大数据量异步导入。请简述Java中强引用、软引用、弱引用和虚引用的核心区别及典型应用场景。在设备信息批量导入导致JVM频繁触发Full GC时，你通常会遵循怎样的排查路径来定位内存问题？\",\"type\":\"JAVA_BASIC\",\"category\":\"Java基础 - 引用类型与JVM排查\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":false,\"parentQuestionIndex\":null},{\"questionIndex\":13,\"question\":\"在使用@Transactional注解控制多Sheet导入事务时，如果方法内部通过try-catch捕获了异常但没有重新抛出，事务是否会回滚？请从Spring AOP代理拦截和异常传播机制的角度解释原因。\",\"type\":\"JAVA_BASIC\",\"category\":\"Java基础 - 引用类型与JVM排查（追问1）\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":true,\"parentQuestionIndex\":12},{\"questionIndex\":14,\"question\":\"熟练掌握Java集合是后端开发的基础。请详细说明HashMap在JDK 1.8中的底层数据结构是什么？当发生哈希冲突且链表长度达到阈值时，为什么会转换为红黑树？这个树化阈值为什么设定为8，而退化回链表的阈值是6？\",\"type\":\"JAVA_COLLECTION\",\"category\":\"Java集合 - HashMap源码与数据结构\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":false,\"parentQuestionIndex\":null},{\"questionIndex\":15,\"question\":\"HashMap在多线程并发环境下进行put操作可能会导致数据覆盖或链表成环（JDK1.7），在并发场景中你会优先选择ConcurrentHashMap还是Collections.synchronizedMap，请结合底层分段锁或CAS+synchronized机制说明原因。\",\"type\":\"JAVA_COLLECTION\",\"category\":\"Java集合 - HashMap源码与数据结构（追问1）\",\"userAnswer\":null,\"score\":null,\"feedback\":null,\"isFollowUp\":true,\"parentQuestionIndex\":14}]', NULL, NULL, NULL, NULL, NULL, '2026-04-09 10:19:50', '2026-04-09 10:19:50', NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for knowledge_base
@@ -231,7 +236,12 @@ CREATE TABLE `resume`  (
                            UNIQUE INDEX `uk_resume_file_hash`(`file_hash`) USING BTREE,
                            INDEX `idx_resume_analyze_status`(`analyze_status`) USING BTREE,
                            INDEX `idx_resume_uploaded_at`(`uploaded_at`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '简历表 - 存储上传的简历文件信息' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '简历表 - 存储上传的简历文件信息' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of resume
+-- ----------------------------
+INSERT INTO `resume` VALUES (7, '376fa3b70985299c388f7a2ac97cb6da953cb8a38b30bfde55f7c1ad7df94a77', '社招简历1.pdf', 133577, 'application/pdf', 'resumes/2026/04/09/5f84af0d_SheZhaoJianLi1.pdf', 'http://localhost:9000/simple/resumes/2026/04/09/5f84af0d_SheZhaoJianLi1.pdf', '个⼈信息\n\n- /男/1998.03/武汉\n\n- 电话/微信： ，邮箱：fr @foxmail.com\n\n求职意向\n期望职位：Java后端开发\n期望城市：成都\n\n教育经历\n\n学校 学历，专业 时间\n\n武汉⼤学 本科，通信⼯程 2017.09 - 2021.06\n\n⼯作经历/实习经历\nXX公司（2022 年 1⽉ ~ ⾄今 ）\n\n职位：Java 后端开发⼯程师\n⼯作内容：主要负责公司⼤数据平台、智慧社区平台、IBMS平台开发⼯作\n\nXX公司（2021年6⽉～2021年12⽉）\n\n职位：需求⼯程师\n⼯作内容：公司智慧警务平台、智慧社区平台需求分析与原型设计；开发进度跟进；客户拜访交流\n\n技能清单\n计算机基础 ：熟练掌握计算机⽹络、数据结构和算法、操作系统，了解计算机组成原理\nLinux : 熟练使⽤ Linux，有 Linux 下开发部署项⽬的实际经验\nJava：熟练掌握 Java 基础、集合、并发、熟悉 JVM 常⻅概念\n开发⼯具 ：熟练使⽤ Maven/Gradle、Git、IDEA 、Docker 等开发⼯具\n数据库：熟练掌握 MySQL 数据库以及常⻅优化⼿段，熟练掌握Redis\n搜索引擎 ：熟悉 Elasticsearch 的使⽤\n框架：熟练掌握 Spring、Spring MVC、 SpringBoot、MyBatis、Spring Security 等基础开发框架\n前端：熟练掌握 HTML5、CSS、Javascript、vue ，有 Vue 的实际开发经验\nDevops : 熟悉 Jenkins，熟悉 CI/CD 流程\n\n项⽬经历\n\n旧项⽬IBMS改造/物联⽹平台V0.1\n\n2023-01~⾄今  软件开发部  Java后端开发⼯程师\n\n项⽬描述 : 将IBMS（智能建筑管理系统）从C#语⾔迁移到java语⾔，主要功能点有设备接⼊、规则引擎、国\n标视频接⼊、OpenApi 开放接⼝、第三⽅平台对接。\n\n技术栈 : Springboot、MySQL、Redis、MQTT\n\n⼯作内容 :\n\n1. 搭建了IBMS开发框架：使⽤Gitlab、Jenkins、Sonar等⼯具搭建CI/CD流⽔线，⼤幅提升了测试部署效\n率；负责代码审查与合并⼯作，保证了项⽬质量；积极解决同事的开发问题，推进了项⽬进度。\n\n2. 开发了可扩展的第三⽅平台对接模块：采⽤模版模式定义了三⽅平台对接的标准化步骤，规范了对接三\n⽅平台的流程，提⾼了代码规范性和可维护性；使⽤Spring Boot Starter封装对接的第三⽅平台，使得\n相关模块能够⾃动配置，并且易于拆卸；使⽤spring 外部化配置第三⽅平台信息，有效减少硬编码，提\n升了代码可维护性；搭建EasyMock服务，⽤于模拟第三⽅平台接⼝，⽅便了在⽹络隔离情况下的接⼝\n对接⼯作\n\n3. 开发了设备接⼊模块的后端功能和前端⻚⾯：使⽤异步编程优化了设备导⼊功能，提升了设备信息导⼊\n速度；通过事务控制保证了多sheet导⼊多个表数据情况下的数据正确性；通过合理的抽象和封装，使\n得模块的可复⽤性和可维护性得到了⼤幅提升\n\n智慧社区平台\n\n2022-05~2022-12  软件开发部   Java后端开发⼯程师\n\n项⽬描述 : 智慧平安社区综合管理平台，提供辖区内告警研判处置、数据汇聚处理、⼯单流转、物联感知设备\n管理、特殊⼈群⾏踪监测、可视指挥调度等功能。\n\n技术栈：Springboot、Springcloud、Oracle、Mybatis、Redis、Kafka、Nginx\n\n⼯作内容 :\n\n1. 主导信访⽭调模块的开发⼯作：主要负责⽭盾纠纷的新增、处置、流转、办理以及相关数据统计分析等\n功能点；在有限的时间内，通过合理的设计和实现，成功地完成了这些功能的开发，并保证了项⽬的如\n期交付\n\n2. 优化了⼀张图相关统计接⼝：使⽤CompletableFuture提⾼了相关接⼝查询性能，并为其设置了合理的\n线程池，避免了可能发⽣的过多创建线程问题；优化相关sql及表结构，有效提升数据库查询速率：对于\n访问频繁⾼并且更新频率低的类似字典数据，采⽤双写⽅案将相关数据缓存⼊redis；对于对于访问频率\n⾼、更新频率⼤，并且每条记录字段多的数据，开启mybatis⼆级缓存；采⽤⼦查询及内连接优化深度\n分⻚，有效减少回表次数，有效提升深度分⻚场景下查询速率；为数据域字段建⽴前缀索引，有效提升\n数据域过滤速率\n\n3. 开发了告警⽣成相关业务逻辑，采⽤责任链模式与策略模式有效降低代码耦合度：告警⽣成功能涉及⼏\n⼗种设备、⼈脸抓拍、数据研判等类型告警、在这⾥我们通过kafka接收到相关告警后，先对数据进⾏预\n处理；之后将数据分为⼈、房屋、设备等类型的告警、采⽤策略模式依据数据分类选取不同处理逻辑；\n之后通过责任链分别处理数据落库、重复告警忽略、告警⽣成、关联告警⽣成、发送相关告警消息给责\n任⼈等逻辑\n\nXX⼈脸识别平台\n\n2022-01~2022-06  软件开发部  Java后端开发⼯程师\n\n项⽬描述 : ⼀个⼩型⼈脸识别平台，提供3000路以内⼈脸摄像头抓拍解析处理识别搜索能⼒\n\n技术栈：Spring、Elasticsearch、MySQL、Kafka\n\n⼯作内容 :\n\n1. 针对⼈脸检索缓慢问题，使⽤Elasticsearch改造相关接⼝：采⽤Spring @Conditional相关注解条件装\n配新增加的Elasticsearch模块相关bean，程序启动时依据条件控制是否装配Elasticsearch模块，前端通\n过传参控制是否使⽤Elasticsearch查询，有效兼容了旧接⼝；为⼈脸抓拍记录等数据建⽴Elasticsearch\n索引，有效提升了检索速率；为Elasticsearch ⽂档设置索引⽣命周期策略，有效节省了存储空间、有效\n提升了查询速率；通过限制前端禁⽌跳⻚和最⼤分⻚深度提升系统稳定性和可靠性，保障了查询速度；\n通过以上措施有效提升了⼈脸检索相关接⼝性能，相关接⼝响应时间从20s以内优化到平均延时\n200ms，最⼤延时2s\n\n2. 优化Logstash数据同步sql，有效提升相关sql性能：观测Logstash⽇志发现⼈脸抓拍记录表数据同步\nsql每次查询耗时1s以上， 查看sql执⾏计划发现该sql已⾛索引，查询耗时200ms才正常，查看建表DDL\n后发现该表使⽤了MyISAM存储引擎，并且使⽤了分区表，分区键使⽤了联合索引年、⽉、⽇，遂调整\nsql查询语句，先查询联合索引年、⽉、⽇，调整后sql查询耗时成功降低到200ms以内\n\n	个人信息\n	求职意向\n	教育经历\n	工作经历/实习经历\n	技能清单\n	项目经历\n	旧项目IBMS改造/物联网平台V0.1\n	智慧社区平台\n	XX人脸识别平台', '2026-04-09 09:15:41', NULL, 0, 'COMPLETED', NULL, '2026-04-09 09:15:41', '2026-04-09 09:15:41');
 
 -- ----------------------------
 -- Table structure for resume_analysis
@@ -254,7 +264,12 @@ CREATE TABLE `resume_analysis`  (
                                     PRIMARY KEY (`id`) USING BTREE,
                                     INDEX `idx_resume_analysis_resume_id`(`resume_id`) USING BTREE,
                                     CONSTRAINT `fk_resume_analysis_resume` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '简历分析结果表 - 存储AI对简历的分析结果' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '简历分析结果表 - 存储AI对简历的分析结果' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of resume_analysis
+-- ----------------------------
+INSERT INTO `resume_analysis` VALUES (2, 7, 74, 13, 10, 16, 7, 28, '简历具备985名校背景与真实的政企/IoT项目经验，技术栈完整且已具备初步的架构封装意识，但在技术名词规范、业务价值量化表达及分布式架构深度上仍需打磨。', '[\"985院校通信工程背景，基础素质与工程学习能力优秀\",\"项目贴合政企/IoT实际业务，具备ES检索调优、Kafka消息处理、异步编排等实战落地经验\",\"已具备架构思维，能主动运用设计模式与Spring Boot Starter进行模块抽象与标准化封装\"]', '[{\"category\":\"格式\",\"priority\":\"高\",\"issue\":\"技术名词大小写及拼写严重不规范，影响技术专业性\",\"recommendation\":\"【名词纠错清单】Springboot→Spring Boot, springcloud→Spring Cloud, Mybatis→MyBatis, spring→Spring, vue→Vue, mysql→MySQL, Logstash→Logstash。技术栈展示必须严格遵循官方文档命名规范，避免全小写或连写。\"},{\"category\":\"项目\",\"priority\":\"高\",\"issue\":\"核心项目描述缺乏量化指标，未严格遵循STAR法则，业务闭环与技术深度结合不足\",\"recommendation\":\"【深度重写示例-智慧社区接口优化】原句：“优化了一张图相关统计接口...采用CompletableFuture...双写方案将相关数据缓存入redis...” 优化句：“针对社区数据大屏聚合查询耗时>3s痛点，基于 CompletableFuture 异步编排多源数据查询，自定义隔离线程池防资源耗尽；采用 Caffeine+Redis 多级缓存架构替代 MyBatis 二级缓存，结合 SQL 执行计划分析与前缀索引优化，将核心接口 P99 延迟降至 200ms 内，QPS 提升 4 倍。”\"},{\"category\":\"项目\",\"priority\":\"高\",\"issue\":\"部分技术选型在分布式/高并发场景下存在隐患或方案陈旧\",\"recommendation\":\"【方案优化建议】1. 缓存架构：分布式环境下 MyBatis 二级缓存易导致脏读，建议替换为 Caffeine 本地缓存 + Redis 分布式缓存；2. 数据同步：Logstash 定时轮询同步易造成DB压力与延迟，建议替换为 Canal 监听 MySQL Binlog + Kafka 实现 ES 实时增量同步；3. 设备导入：明确使用 EasyExcel 流式解析 + 任务表异步分片处理，替代模糊的“异步编程”，并补充百万级数据导入耗时指标（如从 15min 优化至 2min）。\"},{\"category\":\"表达\",\"priority\":\"中\",\"issue\":\"描述存在大量冗余词汇与主观表述，缺乏强动词引导与技术穿透力\",\"recommendation\":\"删除所有“负责...开发”、“大幅/有效提升了”等冗余词汇。统一采用“强动词（主导/重构/设计/落地）+ 核心技术方案 + 解决的业务痛点 + 量化结果”结构。单条 Bullet Point 严格控制在 2 行以内，确保面试官 3 秒内抓取高价值技术点。\"},{\"category\":\"技能\",\"priority\":\"中\",\"issue\":\"技能清单描述过于宽泛，缺乏对底层原理与高阶组件的精准界定\",\"recommendation\":\"将“熟悉JVM常见概念”具象化为“掌握JVM内存模型与GC算法，具备使用 Arthas/MAT 排查线上 OOM 与 CPU 飙高问题的实战经验”；补充微服务治理（Sentinel/Nacos）、分布式一致性（Seata/可靠消息最终一致性）、全链路监控等关键词，精准对齐中高级Java后端岗位JD要求。\"}]', '2026-04-09 09:17:45', '2026-04-09 09:17:45');
 
 -- ----------------------------
 -- Table structure for sys_dept
@@ -306,7 +321,7 @@ CREATE TABLE `sys_menu`  (
                              PRIMARY KEY (`id`) USING BTREE,
                              UNIQUE INDEX `uk_menu_code`(`menu_code`) USING BTREE,
                              INDEX `idx_parent_id`(`parent_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_menu
@@ -329,7 +344,7 @@ INSERT INTO `sys_menu` VALUES (15, '文档上传', 'knowledge-upload', 13, '/kno
 INSERT INTO `sys_menu` VALUES (16, '知识问答', 'knowledge-query', 13, '/knowledge/query', 'knowledge/Query', 'carbon-chat', 2, 1, 1, 3, '2026-04-07 09:10:50', '2026-04-07 09:10:50', 0);
 INSERT INTO `sys_menu` VALUES (17, '简历上传', 'resume-upload', 2, '/resume/upload', 'resume/Upload', NULL, 2, 0, 1, 1, '2026-04-07 09:10:50', '2026-04-07 09:10:50', 0);
 INSERT INTO `sys_menu` VALUES (18, '简历详情', 'resume-detail', 2, '/resume/:id', 'resume/Detail', NULL, 2, 0, 1, 2, '2026-04-07 09:10:50', '2026-04-07 09:10:50', 0);
-INSERT INTO `sys_menu` VALUES (19, '面试会话', 'interview-session', 4, '/interview/session/:id', 'interview/Session', NULL, 2, 0, 1, 1, '2026-04-07 09:10:50', '2026-04-07 09:10:50', 0);
+INSERT INTO `sys_menu` VALUES (19, '面试会话', 'interview-session', 4, '/interview/session', 'interview/Session', NULL, 2, 0, 1, 1, '2026-04-07 09:10:50', '2026-04-09 02:16:26', 0);
 
 -- ----------------------------
 -- Table structure for sys_operation_log
@@ -449,7 +464,7 @@ CREATE TABLE `sys_role_menu`  (
                                   UNIQUE INDEX `uk_role_menu`(`role_id`, `menu_id`) USING BTREE,
                                   INDEX `idx_role_id`(`role_id`) USING BTREE,
                                   INDEX `idx_menu_id`(`menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 74 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色菜单关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 85 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色菜单关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_role_menu

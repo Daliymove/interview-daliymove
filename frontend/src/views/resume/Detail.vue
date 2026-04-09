@@ -310,7 +310,7 @@ const handleTabChange = (tab: TabType) => {
 
 const handleStartInterview = () => {
   if (resume.value?.resumeText) {
-    router.push(`/interview/${resumeId.value}`)
+    router.push(`/interview/session?resumeId=${resumeId.value}`)
   }
 }
 
