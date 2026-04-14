@@ -37,7 +37,7 @@ public class InterviewController {
     /**
      * 创建面试会话
      */
-@PostMapping("/interview/sessions")
+    @PostMapping("/interview/sessions")
     @Operation(summary = "创建面试会话", description = "根据简历内容创建模拟面试会话，生成面试题目")
     public Result<InterviewSessionDTO> createSession(@RequestBody CreateInterviewRequest request) {
         log.info("创建面试会话，题目数量: {}", request.questionCount());
