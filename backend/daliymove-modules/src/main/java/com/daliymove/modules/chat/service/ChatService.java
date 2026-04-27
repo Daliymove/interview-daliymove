@@ -1,6 +1,7 @@
 package com.daliymove.modules.chat.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.daliymove.modules.chat.dto.ConversationVO;
 import com.daliymove.modules.chat.entity.ChatConversation;
 import com.daliymove.modules.chat.entity.ChatMessage;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -130,6 +132,7 @@ public class ChatService {
         
         if (conversation != null) {
             conversation.setTitle(title);
+            conversation.setUpdateTime(LocalDateTime.now());
             conversationMapper.updateById(conversation);
         }
     }
@@ -162,7 +165,7 @@ public class ChatService {
     }
 
     /**
-     * 保存消息
+     * 保存消息，同时更新对话的更新时间使对话排到列表前面
      * 
      * @param conversationId 对话ID
      * @param role 角色（user/assistant）
@@ -175,6 +178,11 @@ public class ChatService {
         message.setRole(role);
         message.setContent(content);
         messageMapper.insert(message);
+        
+        conversationMapper.update(null,
+            new LambdaUpdateWrapper<ChatConversation>()
+                .set(ChatConversation::getUpdateTime, LocalDateTime.now())
+                .eq(ChatConversation::getId, conversationId));
     }
 
     /**

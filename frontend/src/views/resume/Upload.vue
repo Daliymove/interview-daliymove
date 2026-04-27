@@ -1,11 +1,18 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="mb-6">
-      <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
-        <span class="i-carbon-upload text-primary text-2xl"></span>
-        上传简历
-      </h1>
-      <p class="text-gray-500 mt-1">上传简历开始您的 AI 模拟面试之旅</p>
+      <div class="flex items-center gap-3 mb-2">
+        <n-button quaternary circle @click="router.push('/resume')">
+          <template #icon>
+            <span class="i-carbon-arrow-left text-xl"></span>
+          </template>
+        </n-button>
+        <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+          <span class="i-carbon-upload text-primary text-2xl"></span>
+          上传简历
+        </h1>
+      </div>
+      <p class="text-gray-500 ml-12">上传简历开始您的 AI 模拟面试之旅</p>
     </div>
 
     <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
