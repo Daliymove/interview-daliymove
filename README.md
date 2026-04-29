@@ -209,13 +209,13 @@ pnpm dev  # 或 npm run dev
 
 ## 功能截图
 
-![image-20260429104757770](.\docs\images\image-20260429104757770.png)
+![image-20260429104757770](./docs/images/image-20260429104757770.png)
 
-![image-20260429104849487](\docs\images\image-20260429104849487.png)
+![image-20260429104849487](./docs/images/image-20260429104849487.png)
 
-![image-20260429104958506](\docs\images\image-20260429104958506.png)
+![image-20260429104958506](./docs/images/image-20260429104958506.png)
 
-![image-20260429105031664](\docs\images\image-20260429105031664.png)
+![image-20260429105031664](./docs/images/image-20260429105031664.png)
 
 ### 简历分析
 
